@@ -5,6 +5,8 @@ Super cool tic-tac-toe project
 ## Resources
 
 - [Websocket Support in ASP.NET Core - Basically a C# websocket getting started page](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-9.0)
+- [.Net Dependency Download the .Net SDK v9+](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- 
 
 ## Notes
 
