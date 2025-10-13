@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "eecs-581-p3/1.0.0": {
+        "runtime": {
+          "eecs-581-p3.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "eecs-581-p3/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

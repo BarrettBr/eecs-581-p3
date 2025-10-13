@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "restore": {
+    "E:\\Downloads\\School Stuff\\College\\2025\\Fall\\Software Engineering 2\\Projects\\eecs-581-p3\\eecs-581-p3.csproj": {}
+  },
+  "projects": {
+    "E:\\Downloads\\School Stuff\\College\\2025\\Fall\\Software Engineering 2\\Projects\\eecs-581-p3\\eecs-581-p3.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "E:\\Downloads\\School Stuff\\College\\2025\\Fall\\Software Engineering 2\\Projects\\eecs-581-p3\\eecs-581-p3.csproj",
+        "projectName": "eecs-581-p3",
+        "projectPath": "E:\\Downloads\\School Stuff\\College\\2025\\Fall\\Software Engineering 2\\Projects\\eecs-581-p3\\eecs-581-p3.csproj",
+        "packagesPath": "C:\\Users\\barre\\.nuget\\packages\\",
+        "outputPath": "E:\\Downloads\\School Stuff\\College\\2025\\Fall\\Software Engineering 2\\Projects\\eecs-581-p3\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\barre\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

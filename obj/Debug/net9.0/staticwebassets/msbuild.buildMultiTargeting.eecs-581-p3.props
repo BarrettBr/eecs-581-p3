@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\eecs-581-p3.props" />
+</Project>
