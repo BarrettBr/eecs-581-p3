@@ -1,29 +1,59 @@
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\appsettings.Development.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\appsettings.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\eecs-581-p3.staticwebassets.endpoints.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\eecs-581-p3.exe
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\eecs-581-p3.deps.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\eecs-581-p3.runtimeconfig.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\eecs-581-p3.dll
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\bin\Debug\net9.0\eecs-581-p3.pdb
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.GeneratedMSBuildEditorConfig.editorconfig
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.AssemblyInfoInputs.cache
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.AssemblyInfo.cs
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.csproj.CoreCompileInputs.cache
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.MvcApplicationPartsAssemblyInfo.cache
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.sourcelink.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\scopedcss\bundle\eecs-581-p3.styles.css
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets.build.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets.development.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets\msbuild.eecs-581-p3.Microsoft.AspNetCore.StaticWebAssets.props
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets\msbuild.eecs-581-p3.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets\msbuild.build.eecs-581-p3.props
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets\msbuild.buildMultiTargeting.eecs-581-p3.props
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets\msbuild.buildTransitive.eecs-581-p3.props
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\staticwebassets.pack.json
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.dll
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\refint\eecs-581-p3.dll
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.pdb
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\eecs-581-p3.genruntimeconfig.cache
-E:\Downloads\School Stuff\College\2025\Fall\Software Engineering 2\Projects\eecs-581-p3\obj\Debug\net9.0\ref\eecs-581-p3.dll
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/appsettings.Development.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/appsettings.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.staticwebassets.endpoints.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.exe
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.deps.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.runtimeconfig.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.dll
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.pdb
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.GeneratedMSBuildEditorConfig.editorconfig
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.AssemblyInfoInputs.cache
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.AssemblyInfo.cs
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.csproj.CoreCompileInputs.cache
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.MvcApplicationPartsAssemblyInfo.cache
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.sourcelink.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/scopedcss/bundle/eecs-581-p3.styles.css
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets.development.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.endpoints.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets/msbuild.eecs-581-p3.Microsoft.AspNetCore.StaticWebAssets.props
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets/msbuild.eecs-581-p3.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets/msbuild.build.eecs-581-p3.props
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets/msbuild.buildMultiTargeting.eecs-581-p3.props
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets/msbuild.buildTransitive.eecs-581-p3.props
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/staticwebassets.pack.json
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.dll
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/refint/eecs-581-p3.dll
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.pdb
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.genruntimeconfig.cache
+E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs-581-p3/obj/Debug/net9.0/ref/eecs-581-p3.dll
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/rpswa.dswa.cache.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.GeneratedMSBuildEditorConfig.editorconfig
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.AssemblyInfoInputs.cache
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.AssemblyInfo.cs
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.csproj.CoreCompileInputs.cache
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.MvcApplicationPartsAssemblyInfo.cache
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.sourcelink.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.dll
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/refint/eecs-581-p3.dll
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.pdb
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/appsettings.Development.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/appsettings.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.staticwebassets.runtime.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.staticwebassets.endpoints.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.deps.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.runtimeconfig.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.dll
+/home/adam/programming/class/581_software_eng/eecs-581-p3/bin/Debug/net9.0/eecs-581-p3.pdb
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/rjimswa.dswa.cache.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/scopedcss/bundle/eecs-581-p3.styles.css
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/pw6rb0gju4-yqqujajfr3.gz
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.json.cache
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.development.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.endpoints.json
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.genruntimeconfig.cache
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/ref/eecs-581-p3.dll
