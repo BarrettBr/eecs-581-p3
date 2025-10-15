@@ -4,10 +4,11 @@ const square_x = 1;
 const square_o = 2;
 
 // These variables hold the canvas context and canvas metadata
-var canvas = document.getElementById("mainCanvas");
+var canvas = document.getElementById("ttt-game");
 var ctx = canvas.getContext("2d");
 var width = canvas.width;
 var height = canvas.height;
+var status_element = document.getElementById('game-status');  
 
 // Used to store the move state locally
 var board = [
@@ -67,15 +68,23 @@ function drawState(){
 //						Also worked when calling it on function load
 function editBoard(row, col, state){
 	// check that we are setting the square to a valid state
-	if( !(state in [empty, square_x, square_o])){
+	if( ![empty, square_x, square_o].includes(state)){
 		return;
 	}
 	board[row][col] = state;
+
+	// Not strictly necessary but sends updates to an aria role for screen reader compatability
+	if(state == square_x){
+		status_element.textContent = `X placed at (${row}, ${col})`;
+	} else if (state == square_o){
+		status_element.textContent = `O placed at (${row}, ${col})`;
+	}
 }
 
 // This function is used to draw the board state ~60 fps 
 // It functions in a kind of polling way where any updates inbetween frames get caught in the next update
 function draw(){
+	ctx.clearRect(0,0, canvas.width, canvas.height);
 	drawGrid();
 	drawState();
 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title> Index </title>	
+		<link rel="stylesheet" href="css/ttt.css">
+	</head>
+	<body>
+		<main class="container">
+			<!-- The text inside the canvas is only for any potential screen readers-->
+			<canvas id="ttt-game" width="600" height="600" tabindex="0">
+				This is an interactive tic-tac-toe game.
+				It requires interaction by clicking a free square to place a piece 
+			</canvas>
+			<!-- Reads out any state updates-->
+			<div aria-live="assertive" id="game-status" style="display: none;">
+			</div>
+		</main>
+		<script src="js/ttt.js"></script> 
+	</body>
+</html>

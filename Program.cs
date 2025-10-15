@@ -37,7 +37,7 @@ class Program
 		// Configuring the app to serve files int static/...
 		app.UseDefaultFiles(new DefaultFilesOptions
 		{
-			DefaultFileNames = new List<string> { "html/index.html" }
+			DefaultFileNames = new List<string> { "html/tic-tac-toe.html" }
 		});
 		app.UseStaticFiles();
 		app.MapStaticAssets();

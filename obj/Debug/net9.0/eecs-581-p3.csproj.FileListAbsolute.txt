@@ -57,5 +57,5 @@ E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.genruntimeconfig.cache
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/ref/eecs-581-p3.dll
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/2u6cop3q0z-hnuy3mwdh1.gz
-/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/pw6rb0gju4-37h4h7jr1u.gz
-/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/3durm9slmm-d3873jwi6h.gz
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/audagxrah8-kjtl6wejq8.gz
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/3durm9slmm-zovs9rekey.gz
