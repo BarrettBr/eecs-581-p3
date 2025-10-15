@@ -1,12 +1,15 @@
+// Used to represent the square states without random magic numbers
 const empty = 0;
 const square_x = 1;
 const square_o = 2;
 
+// These variables hold the canvas context and canvas metadata
 var canvas = document.getElementById("mainCanvas");
 var ctx = canvas.getContext("2d");
 var width = canvas.width;
 var height = canvas.height;
 
+// Used to store the move state locally
 var board = [
 	[empty, empty, empty],
 	[empty, empty, empty],
@@ -15,6 +18,7 @@ var board = [
 
 
 // Used for drawing the basic lines to the screen
+// Testing Methodology: I ran this function on load and the lines appear as expected
 function drawGrid(){
 	let wcell = width/3;
 	let hcell = height/3;
@@ -39,6 +43,8 @@ function drawGrid(){
 }
 
 // This is used to draw the x's and o's on the board
+// Input: The board 2d array
+// Testing Methodology: tested a variety of states in the 2d array with empty, O's, and X's
 function drawState(){
 	let wcell = width/3;
 	let hcell = height/3;
@@ -53,6 +59,22 @@ function drawState(){
 		}
 	}
 }
+
+// Used to add an X or an O to the board
+// Will likely need to be modified later to reduce code in the socket functions
+// input: the row and col of the square and the state to update it to
+// Testing Methodology: tested using the console to call it dynamically and the board updated as intended
+//						Also worked when calling it on function load
+function editBoard(row, col, state){
+	// check that we are setting the square to a valid state
+	if( !(state in [empty, square_x, square_o])){
+		return;
+	}
+	board[row][col] = state;
+}
+
+// This function is used to draw the board state ~60 fps 
+// It functions in a kind of polling way where any updates inbetween frames get caught in the next update
 function draw(){
 	drawGrid();
 	drawState();
@@ -60,6 +82,7 @@ function draw(){
 	window.requestAnimationFrame(draw);
 }
 
+// The entry point of this file
 function init(){
 	window.requestAnimationFrame(draw);
 }
