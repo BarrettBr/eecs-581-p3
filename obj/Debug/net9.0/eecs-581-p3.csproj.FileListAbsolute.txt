@@ -50,10 +50,11 @@ E:/Downloads/School Stuff/College/2025/Fall/Software Engineering 2/Projects/eecs
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/rjsmcshtml.dswa.cache.json
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/scopedcss/bundle/eecs-581-p3.styles.css
-/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/pw6rb0gju4-yqqujajfr3.gz
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.json
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.json.cache
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.development.json
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/staticwebassets.build.endpoints.json
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/eecs-581-p3.genruntimeconfig.cache
 /home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/ref/eecs-581-p3.dll
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/pw6rb0gju4-lt58al4e53.gz
+/home/adam/programming/class/581_software_eng/eecs-581-p3/obj/Debug/net9.0/compressed/3durm9slmm-j9svg8vqye.gz
