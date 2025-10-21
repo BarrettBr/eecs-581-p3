@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("eecs-581-p3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a190188a171a706e00f51f3f172e3a0bdbce5eb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c40eadfc1014f5172db36bed73c976c7e7ae3e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("eecs-581-p3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("eecs-581-p3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
