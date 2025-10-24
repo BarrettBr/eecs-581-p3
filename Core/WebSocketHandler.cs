@@ -3,6 +3,12 @@ namespace SocketHandler.Core
   using Microsoft.AspNetCore.Http;
   using System.Net.WebSockets;
   using System.Collections.Concurrent;
+  public sealed class ClientInfo
+  {
+    public required Guid ClientId { get; set; }
+    public required Guid RoomId { get; set; }
+    public required WebSocket Socket { get; init; }
+  }
   public class WebSocketHandler
   {
     private readonly ConcurrentDictionary<Guid, ClientInfo> connDict = new();

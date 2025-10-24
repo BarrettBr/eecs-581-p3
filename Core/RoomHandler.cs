@@ -53,7 +53,11 @@ namespace SocketHandler.Core
       }
       try
       {
-        room.game.Play(state);
+        if (room.game.Play(state))
+        {
+          // Send out board
+          var board = room.game.board; 
+        }
       }
       catch (Exception e)
       {
