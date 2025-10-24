@@ -5,10 +5,11 @@ const empty = 0, square_x = 1, square_o = 2;
 var canvas = document.getElementById("ttt-game");
 var ctx = canvas.getContext("2d");
 
-// bind the handlers to the element
+// bind the handlers to the proper element
 canvas.addEventListener("click", clickHandler);
 window.addEventListener("resize", windowResized); 
 
+// These variables represent the screen state and are kept up to date by windowResized
 var canvas_width = canvas.width;
 var canvas_height = canvas.height;
 var wcell = canvas_width/3;
@@ -49,6 +50,7 @@ function clickHandler(event){
 	clicked_col = Math.floor(canvas_click_x/wcell); 
 
 	// This is all BS used for demoing
+	// in practice this should connect to sendMessage() 
 	if(alt){
 		editBoard(clicked_row, clicked_col, square_x);
 	} else { 
@@ -117,6 +119,7 @@ function editBoard(row, col, state){
 	} else if (state == square_o){
 		status_element.textContent = `O placed at (${row}, ${col})`;
 	}
+	// Call the UI to update the screen
 	draw();
 }
 
@@ -139,6 +142,7 @@ socket.onmessage = function(event) {
 };
 
 socket.onclose = function(event) {
+	// This function likely won't need to do more than this, could maybe add a reconnecting screen 
 	console.log("Connected to Server lost(Socket)");
 };
 
