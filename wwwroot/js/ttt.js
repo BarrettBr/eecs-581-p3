@@ -15,6 +15,8 @@ var wcell = canvas_width/3;
 var hcell = canvas_height/3;
 var status_element = document.getElementById('game-status');  
 
+const socket = new WebSocket('http://localhost:5238/ws');
+
 // Used to store the move state locally
 // ***IMPORTANT** it is best practice to use the editBoard() function
 // to edit the state in any way
@@ -125,6 +127,25 @@ function draw(){
 	drawGrid();
 	drawState();
 }
+
+// --------------- Sockets ---------------
+socket.onopen = function(event) {
+	console.log("Connected to Server (Socket)");
+};
+
+socket.onmessage = function(event) {
+	// Will need to modify this function to read state changes appropriately 
+	console.log("Socket received data");
+};
+
+socket.onclose = function(event) {
+	console.log("Connected to Server lost(Socket)");
+};
+
+function sendMessage() {
+	// Will need to modify this function to send data in the appropriate way after user click
+}
+// ---------------  ---------------
 
 // The entry point of this file
 function init(){
