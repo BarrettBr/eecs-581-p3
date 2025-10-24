@@ -8,7 +8,7 @@ namespace Game.Core
   public abstract class GameHandler
   {
     public abstract List<Cell> board { get; }
-    public abstract bool Play(object state);
+    public abstract bool Play(string state);
     public abstract State state { get; }
   }
 
@@ -18,10 +18,11 @@ namespace Game.Core
   {
     // Declare an override for the required board variable in the abstract class
     public override List<Cell> board { get; } = new(Enumerable.Repeat(Cell.Empty, 9));
-    public override State state { get; } = State.Playing;
+    private State _state = State.Playing;
+    public override State state => _state;
 
     // Output: Bool based on whether a move was made or not
-    public override bool Play(object state)
+    public override bool Play(string state)
     {
       // TODO: Base Case checking
 
@@ -29,8 +30,8 @@ namespace Game.Core
       return true; // If nothing stopped it/the play was made we return true since we did a move
     }
 
-    // Set current state to whatever it needs to be
-    public void WinDetection()
+    // Set current state of _state to whatever it needs to be use state as a getter to refer to value outside of class
+    private void WinDetection()
     {
       
     }
