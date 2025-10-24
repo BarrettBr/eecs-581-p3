@@ -15,7 +15,7 @@ var wcell = canvas_width/3;
 var hcell = canvas_height/3;
 var status_element = document.getElementById('game-status');  
 
-const socket = new WebSocket('http://localhost:5238/ws');
+const socket = new WebSocket(window.CONFIG.socket_url);
 
 // Used to store the move state locally
 // ***IMPORTANT** it is best practice to use the editBoard() function
