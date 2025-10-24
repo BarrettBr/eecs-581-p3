@@ -63,7 +63,7 @@ namespace SocketHandler.Core
         {
           // 3. Convert textual message from bytes to string
           string message = System.Text.Encoding.UTF8.GetString(webSocketPayload.ToArray());
-
+          RoomHandler.HandleState(1, message); // TODO: PlaceHolder clientID eventually pass back the ClientInfo themselves back
           Console.WriteLine("Client says {0}", message);
         }
       }
