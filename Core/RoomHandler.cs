@@ -1,19 +1,18 @@
+using System.Collections.Concurrent;
+using Game.Core;
+
 namespace SocketHandler.Core
 {
   public sealed class RoomHandler
   {
     // Room instance
     private static RoomHandler? instance = null;
-
     // Lock
     private static readonly object padlock = new object();
-
-    private static List<Room> rooms = new();
+    private static readonly ConcurrentDictionary<Guid, Room> rooms = new();
 
     // Empty Class Constructor
-    RoomHandler()
-    {
-    }
+    RoomHandler(){}
 
     public static RoomHandler Instance
     {
@@ -34,25 +33,58 @@ namespace SocketHandler.Core
     public static Room? FindRoom(int clientID)
     {
       // Loop through internal area of connections finding which room these go to and 
-      foreach (var room in rooms)
+      foreach (var room in rooms.Values)
       {
-        if (room.roomID.Contains(clientID))
+        if (room.clientIDs.Contains(clientID))
         {
           return room;
         }
       }
       return null;
     }
+
+    public static void HandleState(int clientId, object state)
+    {
+      var room = FindRoom(clientId);
+      if (room == null)
+      {
+        Console.WriteLine($"Room Not found for client {clientId}");
+        return;
+      }
+      try
+      {
+        room.game.Play(state);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Error handling state {e.Message}");
+      }
+    }
+
+    public static Guid CreateRoom(GameHandler game)
+    {
+      var id = Guid.NewGuid();
+      rooms[id] = new Room{game=game, roomID=id};
+      return id;
+    }
+
+    public static bool JoinRoom()
+    {
+
+      return true;
+    }
+    
+    public static void LeaveRoom()
+    {
+      
+    }
   }
 
   // Filler class for a room for now
   public class Room
   {
-    public List<int> roomID = [];
-  }
-
-  public class ClientInfo
-  {
-    
+    public required Guid? roomID;
+    public required GameHandler game;
+    public List<int> clientIDs = new(); // Might have to change to match actual client IDs in WebSocketHandler
   }
 }
