@@ -16,5 +16,6 @@ Super cool tic-tac-toe project
 ## Testing
 - (Dependency Test/making sure you are good to go) Connect to WS server/echo back information
   - Starting Server: Run ```dotnet run``` in the folder with "Program.cs"
+  - To test using the front end html/js files open the link ```http://localhost:5238``` in the browser of your choice
   - (OPTIONAL) Connecting to server/echoing information: In a different terminal run ```npx wscat -c ws://localhost:5238/ws``` this is one of many ways to do it but this uses an easy npm package to test it so make sure npm is installed before this if wanting to do it. You can always look up alternate ways by just searching something along the lines of "testing local websocket server" as this is locally hosted you can't currently access this through online tools
     - After connecting just type whatever and press enter and it will echo it back to you
