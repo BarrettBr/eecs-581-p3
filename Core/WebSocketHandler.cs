@@ -11,7 +11,7 @@ namespace SocketHandler.Core
   }
   public class WebSocketHandler
   {
-    private readonly ConcurrentDictionary<Guid, ClientInfo> connDict = new();
+    private static readonly ConcurrentDictionary<Guid, ClientInfo> Connections = new();
     public static async Task HandleWebSocket(HttpContext context)
     {
       // Get the underlying socket & generate a new GUID for the conneciton
@@ -19,14 +19,23 @@ namespace SocketHandler.Core
 
       // 1. Extract useful information from HttpContext www.website.com/requestRoute/?token=value
       string requestRoute = context.Request.Path.ToString();
-      string? token = context.Request.Query["roomID"]; // Change token to token of room id from URL
+      var token = context.Request.Query["roomID"]; // Change token to token of room id from URL
 
-      if (string.IsNullOrEmpty(token))
+      if (!Guid.TryParse(token, out var roomId))
       {
         context.Response.StatusCode = 400;
         await context.Response.WriteAsync("Missing roomId token");
         return;
       }
+
+      var clientID = Guid.NewGuid();
+      var client = new ClientInfo
+      {
+        ClientId = clientID,
+        RoomId = roomId,
+        Socket = socket,
+      };
+      Connections[clientID] = client;
 
       // Initialize containers for reading
       bool connectionAlive = true;
@@ -63,8 +72,8 @@ namespace SocketHandler.Core
         {
           // 3. Convert textual message from bytes to string
           string message = System.Text.Encoding.UTF8.GetString(webSocketPayload.ToArray());
-          RoomHandler.HandleState(1, message); // TODO: PlaceHolder clientID eventually pass back the ClientInfo themselves back
-          Console.WriteLine("Client says {0}", message);
+          RoomHandler.HandleState(client, message);
+          Console.WriteLine($"Client says {message}");
         }
       }
       
