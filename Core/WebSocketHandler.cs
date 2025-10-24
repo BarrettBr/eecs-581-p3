@@ -3,6 +3,12 @@ namespace SocketHandler.Core
   using Microsoft.AspNetCore.Http;
   using System.Net.WebSockets;
   using System.Collections.Concurrent;
+  public sealed class ClientInfo
+  {
+    public required Guid ClientId { get; set; }
+    public required Guid RoomId { get; set; }
+    public required WebSocket Socket { get; init; }
+  }
   public class WebSocketHandler
   {
     private readonly ConcurrentDictionary<Guid, ClientInfo> connDict = new();
@@ -57,7 +63,7 @@ namespace SocketHandler.Core
         {
           // 3. Convert textual message from bytes to string
           string message = System.Text.Encoding.UTF8.GetString(webSocketPayload.ToArray());
-
+          RoomHandler.HandleState(1, message); // TODO: PlaceHolder clientID eventually pass back the ClientInfo themselves back
           Console.WriteLine("Client says {0}", message);
         }
       }

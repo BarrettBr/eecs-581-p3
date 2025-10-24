@@ -8,8 +8,12 @@ Super cool tic-tac-toe project
 - [.Net Dependency Download the .Net SDK v9+](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - (OPTIONAL) Used for testing echo reponse if you want to NOT NEEDED, and many other ways to test this. Just a "If you want to *really* be sure [NPM Node.Js Download](https://nodejs.org/en/download)
 
-## Notes
+## Structure
+- ```wwwroot/``` is where all static files are located. This includes html, css, and js files. Something to be aware of is that every file in ```wwwroot``` can be served to a user so it is best practice to keep things that don't need to be there out of it.
+- ```Core/``` stores all of the C# files except for ```Program.cs``` which serves as the entry point for the app
+- ```Documents/``` holds all of our artifacts such as our requirements spreadsheet etc for assignments
 
+## Notes
 - Note at top of "Websocket Support in ASP.NET Core" page said that chrome/edge have http/2 websockets enabled by default but if you are in firefox you might have to enable it. Idk if we will/are going to use that specifically but just in case some error happens and you dont know why it is a good check
 
 
