@@ -6,6 +6,7 @@ Super cool tic-tac-toe project
 
 - [Websocket Support in ASP.NET Core - Basically a C# websocket getting started page](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/websockets?view=aspnetcore-9.0)
 - [.Net Dependency Download the .Net SDK v9+](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- [Pico css documentation](https://picocss.com/docs)
 - (OPTIONAL) Used for testing echo reponse if you want to NOT NEEDED, and many other ways to test this. Just a "If you want to _really_ be sure [NPM Node.Js Download](https://nodejs.org/en/download)
 
 ## Structure
