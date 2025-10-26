@@ -12,6 +12,20 @@ namespace Game.Core
     public abstract State state { get; }
   }
 
+  public static class GameDecider
+  {
+    public static GameHandler CreateGame(string gameKey)
+    {
+      switch (gameKey.ToLowerInvariant())
+      {
+        case "tictactoe":
+          return new TicTacToe();
+        default:
+          return new TicTacToe(); // TODO: Set to break + handling; Currently set default to TicTacToe but can change to break + handle for later just set it for testing reasons
+      }
+    }
+  }
+
   // TODO: Implement play and WinDetection to both update the board and then check if there is a win or not and update the underlining variable.
   // The st
   public class TicTacToe : GameHandler
