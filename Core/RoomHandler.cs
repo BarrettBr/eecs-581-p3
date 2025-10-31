@@ -2,6 +2,9 @@ using System.Collections.Concurrent;
 using Game.Core;
 using Microsoft.AspNetCore.StaticAssets;
 using Microsoft.VisualBasic;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Net.WebSockets;
 
 namespace SocketHandler.Core
 {
@@ -70,11 +73,24 @@ namespace SocketHandler.Core
         Console.WriteLine($"Error handling state {e.Message}");
       }
     }
-    
-    public static void BroadcastBoard(List<Cell> board, Room room)
+
+    public static async Task BroadcastBoard(List<Cell> board, Room room)
     {
-      // TODO: convert board to a format I can send then loop through the room clients sending out the board
-      // SendAsync/Encoding.UTF8.GetBytes(message) maybe?
+      // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
+      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
+      string jsonString = JsonSerializer.Serialize(dataToSend); // Convert update to JSON object
+      byte[] buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
+      // Loop over each client in the room and send them the update
+      foreach (var client in room.Clients.Values)
+      {
+        await client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+      }
+    }
+
+    public class BoardData
+    {
+      public required string Message { get; set; }
+      public required List<Cell> Value { get; set; }
     }
 
     public static void JoinOrCreateRoom(Guid roomID, string gameKey, ClientInfo client)
