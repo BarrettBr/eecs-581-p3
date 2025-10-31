@@ -50,7 +50,7 @@ namespace SocketHandler.Core
       // Quick helper function that takes in a RoomID and returns the room that corresponds to it
       return rooms.GetValueOrDefault(roomID);
     }
-    public static void HandleState(ClientInfo client, string state)
+    public static async Task HandleStateAsync(ClientInfo client, string state)
     {
       // Description: Takes a state from the frontend (ex NOT based on current state: {"click", row, col}) and passed to the GameHandler to handle/deal with
       // Inputs: Takes in the state update from from the frontend and passes to the backend gamehandler to run it on it's current board
@@ -65,7 +65,7 @@ namespace SocketHandler.Core
       {
         if (room.Game.Play(state))
         {
-          BroadcastBoard(room.Game.board, room);
+          await BroadcastBoard(room.Game.board, room);
         }
       }
       catch (Exception e)

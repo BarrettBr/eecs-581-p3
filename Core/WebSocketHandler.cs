@@ -82,7 +82,7 @@ namespace SocketHandler.Core
         {
           // 3. Convert textual message from bytes to string
           string message = System.Text.Encoding.UTF8.GetString(webSocketPayload.ToArray());
-          RoomHandler.HandleState(client, message);
+          await RoomHandler.HandleStateAsync(client, message);
           Console.WriteLine($"Client says {message}"); // TODO: Clean up or log post finishing up project; Debugging message of state from frontend
         }
       }
