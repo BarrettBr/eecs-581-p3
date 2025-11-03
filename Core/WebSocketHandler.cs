@@ -20,16 +20,19 @@ namespace SocketHandler.Core
       // Get the underlying socket & generate a new GUID for the conneciton
       using var socket = await context.WebSockets.AcceptWebSocketAsync();
 
-      // 1. Extract useful information from HttpContext www.website.com/requestRoute/roomID?=value
+      // Parse information from request
       string requestRoute = context.Request.Path.ToString(); // The full requestRoute/token bit not the value
-      var token = context.Request.Query["roomID"]; // Change token to value of room id from URL (roomID?=value)
+      var roomIDToken = context.Request.Query["roomID"]; // Change token to value of room id from URL (?roomID=value)
       var path = context.Request.Path.Value ?? "/"; // Null coalesing operator if left is null return just a / symbol
       var seg = path.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries); // Remove front/end / symbol then split the remainder based on / symbols so now we get a bit like {"tictactoe", "roomID"} and so on
-      var gameKey = seg.Length > 0 ? seg[0].ToLowerInvariant() : "tictactoe"; // TODO: Might change later to not be defaulted to tictactoe just done for now just do it for non-crash reasons; If a segment exists use the first which will be the game name otherwise use a default of tictactoe
+      var gameParam = context.Request.Query["game"]; // Since it is from a /ws bit we parse out the game
+      var gameKey = !string.IsNullOrWhiteSpace(gameParam)
+                    ? gameParam.ToString().ToLowerInvariant() // If gameParam is real use it
+                    : (seg.Length > 0 ? seg[0].ToLowerInvariant() : "tictactoe"); // Else default to tictactoe TODO: Might remove/redirect instead of default
 
 
       // Convert token from string -> Guid
-      if (!Guid.TryParse(token, out var roomID))
+      if (!Guid.TryParse(roomIDToken, out var roomID))
       {
         context.Response.StatusCode = 400;
         await context.Response.WriteAsync("Missing roomID token");

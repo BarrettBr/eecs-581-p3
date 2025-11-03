@@ -13,7 +13,7 @@ namespace Game.Core
     public abstract State state { get; }
   }
 
-  public static class GameDecider
+  public static class GameFactory
   {
     public static GameHandler CreateGame(string gameKey)
     {

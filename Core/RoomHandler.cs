@@ -5,6 +5,7 @@ using Microsoft.VisualBasic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
+using System.Text.Json.Serialization;
 
 namespace SocketHandler.Core
 {
@@ -63,7 +64,13 @@ namespace SocketHandler.Core
       }
       try
       {
-        if (room.Game.Play(state))
+        // Added lock to prevent 2 users from playing at the same time
+        bool changed;
+        lock (room.RoomLock)
+        {
+          changed = room.Game.Play(state);
+        }
+        if (changed)
         {
           await BroadcastBoard(room.Game.board, room);
         }
@@ -74,16 +81,44 @@ namespace SocketHandler.Core
       }
     }
 
+    // Used to convert enums to data as Text.Json converts it to numbers by default
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+      Converters = { new JsonStringEnumConverter() }
+    };
+
     public static async Task BroadcastBoard(List<Cell> board, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
-      string jsonString = JsonSerializer.Serialize(dataToSend); // Convert update to JSON object
-      byte[] buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
+      string jsonString = JsonSerializer.Serialize(dataToSend, JsonOptions); // Convert update to JSON object
+      var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       // Loop over each client in the room and send them the update
-      foreach (var client in room.Clients.Values)
+      
+      foreach (var cl in room.Clients.ToArray())
       {
-        await client.Socket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None);
+        var client = cl.Value;
+        try
+        {
+          await client.Socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+        } catch (Exception ex){
+          Console.WriteLine($"Error broadcasting board to clients {ex.Message}");
+          room.Clients.TryRemove(client.ClientID, out _);
+        }
+      }
+    }
+
+    public static async Task SendBoardToClient(List<Cell> board, ClientInfo client)
+    {
+      // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
+      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
+      string jsonString = JsonSerializer.Serialize(dataToSend, JsonOptions); // Convert update to JSON object
+      var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
+      try
+      {
+        await client.Socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+      } catch (Exception ex){
+        Console.WriteLine($"Error Sending board to client {ex.Message}");
       }
     }
 
@@ -95,12 +130,15 @@ namespace SocketHandler.Core
 
     public static void JoinOrCreateRoom(Guid roomID, string gameKey, ClientInfo client)
     {
-      // Inputs: Id of the room, the string for the GameDecider to return a new GameHandler, and finally the clientInfo object themselves for use with adding them to the room
+      // Inputs: Id of the room, the string for the GameFactory to return a new GameHandler, and finally the clientInfo object themselves for use with adding them to the room
       // Outputs: Just does an action of creating/adding them to the room or just adding them to the one that exists
-      var room = rooms.GetOrAdd(roomID, new Room { RoomID = roomID, Game = GameDecider.CreateGame(gameKey) });
+      var room = rooms.GetOrAdd(roomID, new Room { RoomID = roomID, Game = GameFactory.CreateGame(gameKey) });
       room.Clients[client.ClientID] = client;
+
+      // Send board to client
+      _ = SendBoardToClient(room.Game.board, client);
     }
-    
+
     public static void LeaveRoom(ClientInfo client)
     {
       // Description: Used to remove a client from a room, afterwards if the room is empty it will delete the room itself. Basic cleanup function.
@@ -123,10 +161,11 @@ namespace SocketHandler.Core
     // TODO: Handle spectators seperatorly from all clients as of right now we just add everyone connected to a clients pool.
       // Maybe do it on order added to dict i.e: first joined player 1 and so on and let the backend GameHandler handle that in cases of 3+ player games?
     // Description: Class that is meant to represent a singular room.
-    // Inputs: This requires a RoomID which is passed from the frontend url a game itself made from the gamedecider in the "JoinOrCreateRoom" method and finally a dictionary of clients
+    // Inputs: This requires a RoomID which is passed from the frontend url a game itself made from the GameFactory in the "JoinOrCreateRoom" method and finally a dictionary of clients
     // Outputs: Singular room that is stored in the rooms dict
     public required Guid RoomID { get; init; }
     public required GameHandler Game { get; init; }
+    public object RoomLock { get; } = new();
     public ConcurrentDictionary<Guid, ClientInfo> Clients { get; } = new();
   }
 }
