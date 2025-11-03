@@ -1,14 +1,14 @@
+using System.Collections;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualBasic;
 using SocketHandler.Core;
 
 namespace Game.Core
 {
-  public enum Cell { Empty, X, O }
   public enum State {Win, Draw, Playing}
   public abstract class GameHandler
   {
-    public abstract List<Cell> board { get; }
+    public abstract IList board { get; }
     public abstract bool Play(string state);
     public abstract State state { get; }
   }
@@ -37,7 +37,8 @@ namespace Game.Core
     // Outputs: This class mainly does actions on it's underlyining board object, By doing this it allows for other classes to get that board state whenever and refer to it's current state
       // The Play class however will return a bool that will be based on whether or not a play has been made (Ex: If user A's turn and B clicks return false and we don't have to
       // worry about client side turn checking making the server the one true point of truth)
-    public override List<Cell> board { get; } = new(Enumerable.Repeat(Cell.Empty, 9)); // The board state initalized using list comprehension to a list of 9 empty cells
+    public enum Cell { Empty, X, O }
+    public override IList board { get; } = new List<Cell>(Enumerable.Repeat(Cell.Empty, 9)); // The board state initalized using list comprehension to a list of 9 empty cells
     private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
     public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
 

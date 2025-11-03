@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
 using System.Text.Json.Serialization;
+using System.Collections;
 
 namespace SocketHandler.Core
 {
@@ -87,7 +88,7 @@ namespace SocketHandler.Core
       Converters = { new JsonStringEnumConverter() }
     };
 
-    public static async Task BroadcastBoard(List<Cell> board, Room room)
+    public static async Task BroadcastBoard(IList board, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
@@ -108,7 +109,7 @@ namespace SocketHandler.Core
       }
     }
 
-    public static async Task SendBoardToClient(List<Cell> board, ClientInfo client)
+    public static async Task SendBoardToClient(IList board, ClientInfo client)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
@@ -125,7 +126,7 @@ namespace SocketHandler.Core
     public class BoardData
     {
       public required string Message { get; set; }
-      public required List<Cell> Value { get; set; }
+      public required IList Value { get; set; }
     }
 
     public static void JoinOrCreateRoom(Guid roomID, string gameKey, ClientInfo client)
