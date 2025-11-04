@@ -37,7 +37,7 @@ function windowResized() {
 
 	canvas_width = canvas.width;
 	canvas_height = canvas.height;
-	draw_ui()
+	draw()
 }
 
 // Used for checking if an (x,y) pair are inside the canvas
@@ -48,7 +48,9 @@ function isInbounds(xpos, ypos, border = 0){
 }
 
 function input(action){
-	console.log(action);
+	// Later we will probably want to add a lock here when the play time is up
+	user_action = action;
+	draw();
 }
 
 
@@ -85,7 +87,9 @@ function draw_circle(xpos, ypos, radius, fill){
 	ctx.stroke();
 }
 
-function draw_ui(){
+function draw(){
+	ctx.clearRect(0,0, canvas_width, canvas_height);
+
 	// all of these config variables have pixel values
 	// Intended for easy tweaking
 	const rad = 10;
@@ -93,22 +97,43 @@ function draw_ui(){
 	const vpad = 60;
 	const spacing = 30;
 	
+	// Add the win tracker for the local user
 	for(let x = 0; x < num_rounds_to_win; x++){
 		let filled = x < p1_wins;
 		draw_circle(x*spacing + hpad, vpad, rad, filled);
 	}
+	// Add the win tracker for their opponent
 	const start_pos = canvas_width - hpad - num_rounds_to_win*spacing;
 	for(let x = 0; x < num_rounds_to_win; x++){
 		let filled = x < p2_wins;
 		draw_circle(start_pos + x*spacing, vpad, rad, filled);
 	}
-}
 
+	// Add the local user's choice
+	// Ngl there is definitely an easier way to do this...
+	// I can't be bothered rn, feel free to fix
+	base_image = new Image();
 
+	var size = 120
+	let vsize = 0;
+	let hsize = 0;
 
-function draw(){
-	console.log("Hello");
-	draw_circle(15, 15, 20, true);
+	if (user_action == rock){
+		vsize = size*1.499;
+		hsize = size;
+		base_image.src = '/images/stone.png';
+	} else if (user_action == paper){
+		vsize = size;
+		hsize = size*1.705;
+		base_image.src = '/images/paper.png';
+	} else if (user_action == scissors){
+		vsize = size*1.3;
+		hsize = size*1.3;
+		base_image.src = '/images/scissors.png';
+	}
+	base_image.onload = function(){
+		ctx.drawImage(base_image, hpad-20, vpad*3 , size, size);
+	}
 }
 
 
