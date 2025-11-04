@@ -1,0 +1,31 @@
+/* Expands on the pico.css container, used absolutely all the time*/
+.container {
+	font: 1.2em sans-serif;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Used in Index, rps, and tic tac toe */ 
+.main-content{
+	background-color:ivory;
+}
+
+/* Used in index */
+.title {
+	color: black;
+}
+
+/* Used in rps */
+.canvas-centered {
+	padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+	width: 50vw;
+	height:30vw;
+	max-width: 800px;
+	max-height: 400px;
+}
