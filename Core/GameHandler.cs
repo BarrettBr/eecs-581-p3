@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualBasic;
 using SocketHandler.Core;
@@ -10,8 +11,10 @@ namespace Game.Core
   {
     public abstract object View { get; }
     public abstract string GameKey { get; }
-    public abstract bool Play(string state);
+    public abstract bool Play(string state, ClientInfo client);
+    public abstract void Join(ClientInfo client);
     public abstract State state { get; }
+    public abstract ConcurrentDictionary<ClientInfo, Index> Players { get; set; }
   }
 
   public static class GameFactory
@@ -53,7 +56,8 @@ namespace Game.Core
     private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
     public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
     public override object View => Board;
-    public override bool Play(string state)
+    public override ConcurrentDictionary<ClientInfo, Index> Players { get; set; } = new(); // Used to store a dictionary of players + indexes of join order.
+    public override bool Play(string state, ClientInfo client)
     {
       // Description:
       //  Handles a player's move. Verifies that the move is valid (e.g., within bounds,
@@ -61,6 +65,7 @@ namespace Game.Core
       //
       // Inputs:
       //    JSON string from the frontend representing the move.
+      //    The client themselves
       // Outputs:
       //    Updates the board and returns true if a valid move was made.
       //
@@ -78,11 +83,23 @@ namespace Game.Core
       // Description:
       //  Checks the board for win or draw conditions and updates _state accordingly.
       //
-      // Inputs: None — uses the current board state.
-      // Outputs: None — updates the internal _state variable.
+      // Inputs: None - uses the current board state.
+      // Outputs: None - updates the internal _state variable.
       //
       // TODO: Implement win/draw detection logic.
 
+    }
+
+    public override void Join(ClientInfo client)
+    {
+      // Descrition:
+      //  Will be called when a user joins this room use this to make a "Player 1, 2,..."
+      //  and internal spectators so as to only allow certain players to play a move
+      // 
+      // Inputs: The client themselves
+      // Ouputs: None - Updates internal "players" variable
+      // 
+      // TODO: Implement the adding of clients to an internal dictionary so as to allow for fast adding/lookup
     }
 
   }

@@ -69,7 +69,7 @@ namespace SocketHandler.Core
         bool changed;
         lock (room.RoomLock)
         {
-          changed = room.Game.Play(state);
+          changed = room.Game.Play(state, client);
         }
         if (changed)
         {
@@ -148,6 +148,7 @@ namespace SocketHandler.Core
 
       // Send board to client
       _ = SendBoardToClient(room.Game.View, client);
+      room.Game.Join(client);
     }
 
     public static void LeaveRoom(ClientInfo client)
