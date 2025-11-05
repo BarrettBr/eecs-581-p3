@@ -56,7 +56,7 @@ namespace SocketHandler.Core
     {
       // Description: Takes a state from the frontend (ex NOT based on current state: {"click", row, col}) and passed to the GameHandler to handle/deal with
       // Inputs: Takes in the state update from from the frontend and passes to the backend gamehandler to run it on it's current board
-      // Outputs: Doesn't return a value, instead it will let the gamehandler play method handle the state afterwards it passes off the new board to BroadcastBoard to send it out to all sockets
+      // Outputs: Doesn't return a value, instead it will let the gamehandler play method handle the state afterwards it passes off the new view to BroadcastView to send it out to all sockets
       var room = FindRoomByRoomID(client.RoomID);
       if (room == null)
       {
@@ -73,7 +73,7 @@ namespace SocketHandler.Core
         }
         if (changed)
         {
-          await BroadcastBoard(room.Game.View, room);
+          await BroadcastView(room.Game.View, room);
         }
       }
       catch (Exception e)
@@ -88,7 +88,7 @@ namespace SocketHandler.Core
       Converters = { new JsonStringEnumConverter() }
     };
 
-    public static async Task BroadcastBoard(object view, Room room)
+    public static async Task BroadcastView(object view, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       var fixedView = fixView(view);

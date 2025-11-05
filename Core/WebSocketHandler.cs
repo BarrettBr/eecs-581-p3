@@ -17,11 +17,9 @@ namespace SocketHandler.Core
     {
       // General form based off of medium article https://medium.com/@shtef21/how-to-create-a-web-socket-server-in-c-ea02eb9475cd
         // With some general adjustments for flow and expanding for error handling
-      // Get the underlying socket & generate a new GUID for the conneciton
-      using var socket = await context.WebSockets.AcceptWebSocketAsync();
 
       // Parse information from request
-      string requestRoute = context.Request.Path.ToString(); // The full requestRoute/token bit not the value
+      string requestRoute = context.Request.Path.ToString(); // The full requestRoute/token bit not the value, for the moment not used but maybe later if we need it.
       var roomIDToken = context.Request.Query["roomID"]; // Change token to value of room id from URL (?roomID=value)
       var path = context.Request.Path.Value ?? "/"; // Null coalesing operator if left is null return just a / symbol
       var seg = path.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries); // Remove front/end / symbol then split the remainder based on / symbols so now we get a bit like {"tictactoe", "roomID"} and so on
@@ -38,6 +36,11 @@ namespace SocketHandler.Core
         await context.Response.WriteAsync("Missing roomID token");
         return;
       }
+
+      // Get the underlying socket & generate a new GUID for the conneciton
+      // Originally was at the top but moved down as this upgrades the connection to a websocket one preventing sending back HTTP error codes in the case of stuff being messed up
+      using var socket = await context.WebSockets.AcceptWebSocketAsync();
+
 
       // Create client object based on currently connected user
       var clientID = Guid.NewGuid();
