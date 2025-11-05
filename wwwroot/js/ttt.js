@@ -18,7 +18,7 @@ var wcell = canvas_width / 3;
 var hcell = canvas_height / 3;
 var status_element = document.getElementById("game-status");
 
-const socket = new WebSocket(window.CONFIG.socket_url);
+const socket = new WebSocket(window.CONFIG.socket_url + "?roomID=9c8e6c2b-8f3b-4f9c-a2b8-dbc4bfc88e3a");
 
 // Used to store the move state locally
 // ***IMPORTANT** it is best practice to use the editBoard() function
