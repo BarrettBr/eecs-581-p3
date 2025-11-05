@@ -8,7 +8,8 @@ namespace Game.Core
   public enum State {Win, Draw, Playing}
   public abstract class GameHandler
   {
-    public abstract IList board { get; }
+    public abstract object View { get; }
+    public abstract string GameKey { get; }
     public abstract bool Play(string state);
     public abstract State state { get; }
   }
@@ -25,31 +26,48 @@ namespace Game.Core
     }
   }
 
-  // TODO: Implement play and WinDetection to both update the board and then check if there is a win or not and update the underlining variable.
-  // Notes: Might want to implement a "Winner" public variable so the frontend can read who actually won the game and display that properly. Could
-    // also keep a "Next turn" var to always check against the next symbol expected so if O gets played but we want an X we skip this turn
-    // Also since state is passed as a string we will most likely convert this from string -> JSON object then parse to get key value pairs
+  // TODO: Implement Play() and WinDetection().
+  //  Play() should update the board and check if the move is valid.
+  //  WinDetection() should evaluate the board and update the current State.
+  // Notes:
+  //  Consider adding a public "Winner" field to the View so the frontend can display who won.
+  //  You may also add a "NextTurn" variable to track whose move is expected.
+  //  The Play() method will likely parse a JSON string (state) into key/value data.
   public class TicTacToe : GameHandler
   {
-    // Description: A class that inherits from GameHandler that defines the playing of the tictactoe game
-    // Inputs: Other files will call to the Play method passing it a "state" string, this will be passed from the frontend in JSON format but the exact layout is still to be determined.
-      // Ex: {event: "click", symbol: "X"} could be a state we can define/handle here
-    // Outputs: This class mainly does actions on it's underlyining board object, By doing this it allows for other classes to get that board state whenever and refer to it's current state
-      // The Play class however will return a bool that will be based on whether or not a play has been made (Ex: If user A's turn and B clicks return false and we don't have to
-      // worry about client side turn checking making the server the one true point of truth)
+    // Description:
+    //  Defines the TicTacToe game logic that inherits from GameHandler.
+    //
+    // Inputs:
+    //    The Play() method receives a JSON string from the frontend describing a move.
+    //    Example: { "event": "click", "symbol": "X" }.
+    //
+    // Outputs:
+    //    Updates the internal board state and exposes it through the View property.
+    //    Returns a bool indicating whether the move was successfully applied.
+    //    The server acts as the single source of truth for game state and turn order.
+
     public enum Cell { Empty, X, O }
-    public override IList board { get; } = new List<Cell>(Enumerable.Repeat(Cell.Empty, 9)); // The board state initalized using list comprehension to a list of 9 empty cells
+    public override string GameKey => "tictactoe"; // Added in case we need to tell the game in roomhandler down the line
+    public Cell[,] Board { get; } = new Cell[3,3]; // The board state initalized using list comprehension to a list of 9 empty cells
     private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
     public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
-
+    public override object View => Board;
     public override bool Play(string state)
     {
-      // Description: Method that "plays" a state onto the board, makes sure the move is valid first i.e: in bounds. valid move and more then checks to see if the game is won/draw and updates underlyining state
-      // Inputs: Will recieve a state JSON string (JSON strings look like dictionaries in python with key value pairs) from the frontend
-      // Outputs: Will update the underlyining board and return a bool saying if a move was done this turn or not
-      // TODO: Base Case checking (Is playing + In bounds + correct turn + other checks)
+      // Description:
+      //  Handles a player's move. Verifies that the move is valid (e.g., within bounds,
+      //  correct turn, and not overwriting an existing cell), then applies it to the board.
+      //
+      // Inputs:
+      //    JSON string from the frontend representing the move.
+      // Outputs:
+      //    Updates the board and returns true if a valid move was made.
+      //
+      // TODO:
+      //   Add base case validation (is game still playing, bounds check, correct turn, etc.)
+      //   Apply the move once validated.
 
-      // TODO: Play the move
 
       WinDetection(); // Used to update State
       return true; // If nothing stopped it/the play was made we return true since we did a move
@@ -57,10 +75,14 @@ namespace Game.Core
 
     private void WinDetection()
     {
-      // Set current state of _state to whatever it needs to be after that move was played. I.E: "Draw" (States in an enum at top if wanting to look at valid states)
-      // Inputs: Nothing just looks at the board state
-      // Outputs: Nothing just updates the underlyining _state variable
-      // TODO: WinDection logic
+      // Description:
+      //  Checks the board for win or draw conditions and updates _state accordingly.
+      //
+      // Inputs: None — uses the current board state.
+      // Outputs: None — updates the internal _state variable.
+      //
+      // TODO: Implement win/draw detection logic.
+
     }
 
   }

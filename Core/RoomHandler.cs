@@ -73,7 +73,7 @@ namespace SocketHandler.Core
         }
         if (changed)
         {
-          await BroadcastBoard(room.Game.board, room);
+          await BroadcastBoard(room.Game.View, room);
         }
       }
       catch (Exception e)
@@ -88,31 +88,41 @@ namespace SocketHandler.Core
       Converters = { new JsonStringEnumConverter() }
     };
 
-    public static async Task BroadcastBoard(IList board, Room room)
+    public static async Task BroadcastBoard(object view, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
+      var fixedView = fixView(view);
+      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = fixedView }; // Convert board to update object
       string jsonString = JsonSerializer.Serialize(dataToSend, JsonOptions); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
-      // Loop over each client in the room and send them the update
-      
+                                                                   // Loop over each client in the room and send them the update
+
       foreach (var cl in room.Clients.ToArray())
       {
         var client = cl.Value;
         try
         {
           await client.Socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-        } catch (Exception ex){
+        }
+        catch (Exception ex)
+        {
           Console.WriteLine($"Error broadcasting board to clients {ex.Message}");
           room.Clients.TryRemove(client.ClientID, out _);
         }
       }
     }
+    
+    private static object fixView(object view)
+    {
+      // TODO: Might need to build this out in case view as an object needs to be treated differently pre-broadcast
+      return view;
+    }
 
-    public static async Task SendBoardToClient(IList board, ClientInfo client)
+    public static async Task SendBoardToClient(object view, ClientInfo client)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = board }; // Convert board to update object
+      var fixedView = fixView(view);
+      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = fixedView }; // Convert board to update object
       string jsonString = JsonSerializer.Serialize(dataToSend, JsonOptions); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       try
@@ -126,7 +136,7 @@ namespace SocketHandler.Core
     public class BoardData
     {
       public required string Message { get; set; }
-      public required IList Value { get; set; }
+      public required object Value { get; set; }
     }
 
     public static void JoinOrCreateRoom(Guid roomID, string gameKey, ClientInfo client)
@@ -137,7 +147,7 @@ namespace SocketHandler.Core
       room.Clients[client.ClientID] = client;
 
       // Send board to client
-      _ = SendBoardToClient(room.Game.board, client);
+      _ = SendBoardToClient(room.Game.View, client);
     }
 
     public static void LeaveRoom(ClientInfo client)
