@@ -1,7 +1,8 @@
+import { connect, send, WSReciever } from "./wsHelper.js";
 // Used to represent the square states without random magic numbers
 const empty = 0,
-square_x = 1,
-square_o = 2;
+    square_x = 1,
+    square_o = 2;
 
 // These variables hold the canvas context and canvas metadata
 var canvas = document.getElementById("ttt-game");
@@ -18,24 +19,22 @@ var wcell = canvas_width / 3;
 var hcell = canvas_height / 3;
 var status_element = document.getElementById("game-status");
 
-const socket = new WebSocket(window.CONFIG.socket_url + "?roomID=9c8e6c2b-8f3b-4f9c-a2b8-dbc4bfc88e3a");
-
 // Used to store the move state locally
 // ***IMPORTANT** it is best practice to use the editBoard() function
 // to edit the state in any way
 // TODO: Match Board to match format of backend board or upon recieving read/update this properly (More of a note about format mismatch *could just backend that works)
 var board = [
-	[empty, empty, empty],
-	[empty, empty, empty],
-	[empty, empty, empty],
+    [empty, empty, empty],
+    [empty, empty, empty],
+    [empty, empty, empty],
 ];
 
 // Function bound to the window's onresized event
 function windowResized() {
-	canvas_width = canvas.width;
-	canvas_height = canvas.height;
-	wcell = canvas_width / 3;
-	hcell = canvas_height / 3;
+    canvas_width = canvas.width;
+    canvas_height = canvas.height;
+    wcell = canvas_width / 3;
+    hcell = canvas_height / 3;
 }
 
 var alt = true; // this variable has no value except for demos
@@ -44,67 +43,63 @@ var alt = true; // this variable has no value except for demos
 // row and column that the user clicked on and then edits the board appropriately
 // Testing Methodology: Clicked on the screen a bunch of times and it worked, even at the bounds
 function clickHandler(event) {
-	// Get the absolute X/Y clicked on and adjust it by the canvas' on screen position
-	var bounds = canvas.getBoundingClientRect();
-	canvas_click_y = event.clientY - bounds.top;
-	canvas_click_x = event.clientX - bounds.left;
+    // Get the absolute X/Y clicked on and adjust it by the canvas' on screen position
+    var bounds = canvas.getBoundingClientRect();
+    const canvas_click_y = event.clientY - bounds.top;
+    const canvas_click_x = event.clientX - bounds.left;
 
-	clicked_row = Math.floor(canvas_click_y / hcell);
-	clicked_col = Math.floor(canvas_click_x / wcell);
+    const clicked_row = Math.floor(canvas_click_y / hcell);
+    const clicked_col = Math.floor(canvas_click_x / wcell);
 
-	// This is all BS used for demoing
-	// in practice this should connect to sendMessage()
-	if (alt) {
-		editBoard(clicked_row, clicked_col, square_x);
-	} else {
-		editBoard(clicked_row, clicked_col, square_o);
-	}
-	alt = !alt;
+    // This "send" is how we send to the backend Idk what alt does so I left it for sake of not screwing you up later
+    // However this is formed gamehandler will recieve/deal with so knowing the form here/backend is important
+    send(socket, { event: "move", row: clicked_row, col: clicked_col });
+    alt = !alt;
 }
 
 // Used for drawing the basic lines to the screen
 // Testing Methodology: I ran this function on load and the lines appear as expected
 function drawGrid() {
-	// Creating the horizontal bars
-	ctx.moveTo(0, hcell);
-	ctx.lineTo(canvas_width, hcell);
-	ctx.stroke();
+    // Creating the horizontal bars
+    ctx.moveTo(0, hcell);
+    ctx.lineTo(canvas_width, hcell);
+    ctx.stroke();
 
-	ctx.moveTo(0, 2 * hcell);
-	ctx.lineTo(canvas_width, 2 * hcell);
-	ctx.stroke();
+    ctx.moveTo(0, 2 * hcell);
+    ctx.lineTo(canvas_width, 2 * hcell);
+    ctx.stroke();
 
-	// Creating the vertical bars
-	ctx.moveTo(wcell, 0);
-	ctx.lineTo(wcell, canvas_height);
-	ctx.stroke();
+    // Creating the vertical bars
+    ctx.moveTo(wcell, 0);
+    ctx.lineTo(wcell, canvas_height);
+    ctx.stroke();
 
-	ctx.moveTo(2 * wcell, 0);
-	ctx.lineTo(2 * wcell, canvas_height);
-	ctx.stroke();
+    ctx.moveTo(2 * wcell, 0);
+    ctx.lineTo(2 * wcell, canvas_height);
+    ctx.stroke();
 }
 
 // This is used to draw the x's and o's on the board
 // Input: The board 2d array
 // Testing Methodology: tested a variety of states in the 2d array with empty, O's, and X's
 function drawState() {
-	ctx.font = "48px serif";
-	for (var row = 0; row < board.length; row++) {
-		for (var col = 0; col < board[0].length; col++) {
-			let content = "";
-			if (board[row][col] == square_x) {
-				content = "X";
-			} else if (board[row][col] == square_o) {
-				content = "O";
-			}
-			let textWidth = ctx.measureText(content).width;
-			ctx.fillText(
-				content,
-				col * wcell + wcell * 0.5 - textWidth / 2,
-				row * hcell + hcell * 0.5 + 18
-			);
-		}
-	}
+    ctx.font = "48px serif";
+    for (var row = 0; row < board.length; row++) {
+        for (var col = 0; col < board[0].length; col++) {
+            let content = "";
+            if (board[row][col] == square_x) {
+                content = "X";
+            } else if (board[row][col] == square_o) {
+                content = "O";
+            }
+            let textWidth = ctx.measureText(content).width;
+            ctx.fillText(
+                content,
+                col * wcell + wcell * 0.5 - textWidth / 2,
+                row * hcell + hcell * 0.5 + 18
+            );
+        }
+    }
 }
 
 // Used to add an X or an O to the board
@@ -113,53 +108,55 @@ function drawState() {
 // Testing Methodology: tested using the console to call it dynamically and the board updated as intended
 //						Also worked when calling it on function load
 function editBoard(row, col, state) {
-	// check that we are setting the square to a valid state
-	if (![empty, square_x, square_o].includes(state)) {
-		return;
-	}
-	board[row][col] = state;
+    // check that we are setting the square to a valid state
+    if (![empty, square_x, square_o].includes(state)) {
+        return;
+    }
+    board[row][col] = state;
 
-	// Not strictly necessary but sends updates to an aria role for screen reader compatability
-	if (state == square_x) {
-		status_element.textContent = `X placed at (${row}, ${col})`;
-	} else if (state == square_o) {
-		status_element.textContent = `O placed at (${row}, ${col})`;
-	}
-	// Call the UI to update the screen
-	draw();
+    // Not strictly necessary but sends updates to an aria role for screen reader compatability
+    if (state == square_x) {
+        status_element.textContent = `X placed at (${row}, ${col})`;
+    } else if (state == square_o) {
+        status_element.textContent = `O placed at (${row}, ${col})`;
+    }
+    // Call the UI to update the screen
+    draw();
 }
 
 // This function is called on screen load and after editBoard() is called
 // it is very important this function is called after every update
 function draw() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawGrid();
-	drawState();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    drawState();
 }
 
 // --------------- Sockets ---------------
-socket.onopen = function (event) {
-	console.log("Connected to Server (Socket)");
-};
+const socket = connect("tictactoe");
 
-socket.onmessage = function (event) {
-	// Will need to modify this function to read state changes appropriately
-	console.log("Socket received data");
-};
+socket.onclose = () => console.log("Closed connection to socket server");
 
-socket.onclose = function (event) {
-	// This function likely won't need to do more than this, could maybe add a reconnecting screen
-	console.log("Connected to Server lost(Socket)");
-};
-
-function sendMessage() {
-	// Will need to modify this function to send data in the appropriate way after user click
-}
+WSReciever(socket, (msg) => {
+    // Built this out a little to help you but this expects the backend to pass back
+    // { event: "view", board: 2D array}
+    // Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
+    try {
+        if (msg.event === "view" && Array.isArray(msg.board)) {
+            board = msg.board;
+            draw();
+        } else {
+            console.warn("Unknown type of ws response", msg.event);
+        }
+    } catch (e) {
+        console.warn("Bad WS sent from Server -> client", e, msg);
+    }
+});
 // ---------------  ---------------
 
 // The entry point of this file
 function init() {
-	draw();
+    draw();
 }
 
 init();
