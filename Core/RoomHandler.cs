@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net.WebSockets;
 using System.Text.Json.Serialization;
 using System.Collections;
+using Newtonsoft.Json;
 
 namespace SocketHandler.Core
 {
@@ -82,18 +83,12 @@ namespace SocketHandler.Core
       }
     }
 
-    // Used to convert enums to data as Text.Json converts it to numbers by default
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-      Converters = { new JsonStringEnumConverter() }
-    };
-
     public static async Task BroadcastView(object view, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       var fixedView = fixView(view);
-      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = fixedView }; // Convert board to update object
-      string jsonString = JsonSerializer.Serialize(dataToSend, JsonOptions); // Convert update to JSON object
+      BoardData dataToSend = new BoardData { Message = "view", Value = fixedView }; // Convert board to update object
+      string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
                                                                    // Loop over each client in the room and send them the update
 
@@ -123,7 +118,7 @@ namespace SocketHandler.Core
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       var fixedView = fixView(view);
       BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = fixedView }; // Convert board to update object
-      string jsonString = JsonSerializer.Serialize(dataToSend, JsonOptions); // Convert update to JSON object
+      string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       try
       {

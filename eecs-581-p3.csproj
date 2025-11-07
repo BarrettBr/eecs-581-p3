@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>eecs_581_p3</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
 </Project>
