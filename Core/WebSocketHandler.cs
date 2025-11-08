@@ -1,3 +1,41 @@
+/*
+Prologue
+
+Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Creation Date: 11/08/2025
+
+Description:
+- Defines ClientInfo (connection data) and the WebSocketHandler that manages a single WebSocket session lifecycle.
+- Validates parameters ('roomID', optional 'game' *needed to set a game but not needed to create a room as we have a fallback)
+  - Upgrades the HTTP request to a WebSocket, and registers the client.
+- Reads frames (supports chunked messages), forwards text messages to the RoomHandler, and performs cleanup on disconnect.
+
+Types:
+- ClientInfo: Stores ClientID, RoomID, and the connected WebSocket
+
+Functions:
+- HandleWebSocket(context: HttpContext): Task
+  Input:
+    - HttpContext containing the WebSocket upgrade request, query params:
+      - roomID: Guid (required) *Frontend automatically develops and sends one back so if using the frontend you are fine if using something like Postman it will throwback an error
+      - game: string (optional; defaults from path or currently to "tictactoe")
+  Behavior:
+    - Validates roomID; returns 400 if missing/invalid
+    - Accepts WebSocket, creates a ClientInfo, registers it, and joins/creates a room
+    - Reads incoming frames until EndOfMessage or Close; on text frames:
+        It decodes it as UTF-8 and forwards to RoomHandler.HandleStateAsync
+    - On close/error: closes socket, leaves room, removes connection
+  Output:
+    - Nothing outside a potential error code if missing roomID; Side-effects can come from room membership changes and messages forwarded to RoomHandler
+
+Inputs:
+- WebSocket text messages representing game state updates from the client
+
+Outputs:
+- None directly; messages are forwarded to RoomHandler which broadcasts to clients
+- Proper WebSocket close handshake and connection cleanup
+*/
+
 namespace SocketHandler.Core
 {
   using Microsoft.AspNetCore.Http;
@@ -16,7 +54,7 @@ namespace SocketHandler.Core
     public static async Task HandleWebSocket(HttpContext context)
     {
       // General form based off of medium article https://medium.com/@shtef21/how-to-create-a-web-socket-server-in-c-ea02eb9475cd
-        // With some general adjustments for flow and expanding for error handling
+      // With some general adjustments for flow and expanding for error handling
 
       // Parse information from request
       string requestRoute = context.Request.Path.ToString(); // The full requestRoute/token bit not the value, for the moment not used but maybe later if we need it.

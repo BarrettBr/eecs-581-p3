@@ -1,3 +1,37 @@
+<!--
+Prologue
+
+Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Creation Date: 11/08/2025
+
+Description:
+- The frontend page specifically for the Tic-Tac-Toe game.
+- Loads and displays an interactive canvas where the game board is drawn.
+- Has accessibility support via a hidden ARIA live region that provides
+  updates for screen readers.
+- Loads WebSocket configuration and the TicTacToe game logic (ttt.js).
+
+Structure:
+- <canvas id="ttt-game">:
+    Draws the 3x3 grid and user moves.
+    Provides fallback text for screen reader accessibility.
+
+- <div id="game-status" aria-live="assertive">:
+    Used by ttt.js to announce moves or board changes.
+
+- Scripts:
+    - config.js: Defines WebSocket endpoint
+    - ttt.js: Handles drawing, board updates, user clicks, and WebSocket communication via a wsHelper.js import
+
+Inputs:
+- User clicks on the canvas
+- WebSocket messages from the backend game server
+
+Outputs:
+- Updated visual board
+- ARIA announcements for accessibility
+-->
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
     <head>

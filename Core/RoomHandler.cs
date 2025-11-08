@@ -9,6 +9,47 @@ using System.Text.Json.Serialization;
 using System.Collections;
 using Newtonsoft.Json;
 
+
+/*
+Prologue
+
+Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Creation Date: 11/08/2025
+
+Description:
+- Central room manager for multiplayer sessions.
+- Tracks active rooms and their clients, applies game state updates via the GameHandler, and broadcasts view updates.
+- Provides helpers to find rooms, join/leave rooms, and send targeted or broadcast room-wide messages.
+
+Types:
+- Room: Represents a single room with a RoomID, Game (GameHandler), a RoomLock to ensure messages are sent in proper order, and a client map.
+
+Functions:
+- Instance: RoomHandler (singleton pattern)
+- FindRoomByClientID(clientID: Guid): Room?
+- FindRoomByRoomID(roomID: Guid): Room?
+- HandleStateAsync(client: ClientInfo, state: string): Task
+  - Locks the room, applies Game.Play(state, client), and if changed broadcasts the new View
+- BroadcastView(view: object, room: Room): Task
+  - Serializes '{ message: "view", value: view }' and sends to all clients in the room
+- SendBoardToClient(view: object, client: ClientInfo): Task
+  - Sends a single board/view update to one client (used on join)
+- JoinOrCreateRoom(roomID: Guid, gameKey: string, client: ClientInfo): void
+  - Creates room if missing (via GameFactory.CreateGame), adds client, sends current View, and calls Game.Join
+- LeaveRoom(client: ClientInfo): void
+  - Removes client from room; deletes room if it becomes empty
+
+Inputs:
+- Client join/leave events
+- Per-client state messages (JSON/string) received from WebSocketHandler
+- gameKey indicating which GameHandler to initiate for a new room
+
+Outputs:
+- Serialized view/board updates broadcast to all clients or a specific client
+- Room lifecycle changes (create, add client, remove client, delete when empty)
+*/
+
+
 namespace SocketHandler.Core
 {
   public sealed class RoomHandler
@@ -20,7 +61,7 @@ namespace SocketHandler.Core
     private static readonly ConcurrentDictionary<Guid, Room> rooms = new(); // <RoomID, Room> Used to store a list of all rooms for easy calling upon
 
     // Empty Class Constructor to prevent the class from being declared as an object without calling RoomHandler.Instance
-    RoomHandler(){}
+    RoomHandler() { }
 
     public static RoomHandler Instance
     {
@@ -38,8 +79,8 @@ namespace SocketHandler.Core
     public static Room? FindRoomByClientID(Guid clientID)
     {
       // Helper function used to get the room that a client is connected to
-      foreach(var room in rooms.Values)
-      {  
+      foreach (var room in rooms.Values)
+      {
         if (room.Clients.ContainsKey(clientID))
         {
           return room;
@@ -106,7 +147,7 @@ namespace SocketHandler.Core
         }
       }
     }
-    
+
     private static object fixView(object view)
     {
       // TODO: Might need to build this out in case view as an object needs to be treated differently pre-broadcast
@@ -117,13 +158,15 @@ namespace SocketHandler.Core
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
       var fixedView = fixView(view);
-      BoardData dataToSend = new BoardData { Message = "boardUpdate", Value = fixedView }; // Convert board to update object
+      BoardData dataToSend = new BoardData { Message = "view", Value = fixedView }; // Convert board to update object
       string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       try
       {
         await client.Socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
-      } catch (Exception ex){
+      }
+      catch (Exception ex)
+      {
         Console.WriteLine($"Error Sending board to client {ex.Message}");
       }
     }
@@ -165,8 +208,6 @@ namespace SocketHandler.Core
 
   public class Room
   {
-    // TODO: Handle spectators seperatorly from all clients as of right now we just add everyone connected to a clients pool.
-      // Maybe do it on order added to dict i.e: first joined player 1 and so on and let the backend GameHandler handle that in cases of 3+ player games?
     // Description: Class that is meant to represent a singular room.
     // Inputs: This requires a RoomID which is passed from the frontend url a game itself made from the GameFactory in the "JoinOrCreateRoom" method and finally a dictionary of clients
     // Outputs: Singular room that is stored in the rooms dict

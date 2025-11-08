@@ -4,9 +4,63 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.VisualBasic;
 using SocketHandler.Core;
 
+
+/*
+Prologue
+
+Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Creation Date: 11/08/2025
+
+Description:
+- Defines the abstract base class for all backend game logic ('GameHandler') and the central factory responsible for instantiating game types ('GameFactory').
+- Implements the TicTacToe game as an example concrete 'GameHandler'.
+- The GameHandler abstraction provides a uniform interface for:
+    - storing game state,
+    - managing players,
+    - applying moves,
+    - exposing a serializable “View” of the game, and
+    - reporting win/draw/playing status.
+- 'GameFactory' creates the correct GameHandler based on a string 'gameKey', enabling multi-game support under a unified API.
+
+Functions / Classes:
+- enum State: Represents the game’s status ('Win', 'Draw', 'Playing').
+
+- abstract class GameHandler:
+    - View: Returns an object representing the current game state (used for frontend rendering updates).
+    - GameKey: Unique string identifier for each game type. This is more future proofing but can be used in RoomHandler
+      If needing to send out/handle games different in weird use cases
+    - Play(state: string, client: ClientInfo): Applies a move sent from the frontend, updates state, and returns success.
+    - Join(client: ClientInfo): Adds a client to the game (used for determining player order and spectators).
+    - state: Indicates current win/draw/playing condition.
+    - Players: Maps players to metadata such as join index.
+
+- static class GameFactory:
+    - CreateGame(gameKey: string): Returns a new GameHandler instance based on the provided key.
+      Currently defaults to TicTacToe. Might want to change later if we want full proper error handling
+
+- class TicTacToe : GameHandler:
+    - Implements TicTacToe-specific game rules, board representation, and state transitions.
+    - Board: 3×3 array storing the current playing grid. Currently stores as a 2D array [[],[],[]] with each entry being a "Line" on the board
+    - Play(state: string, client: ClientInfo): Handles move validation, turn logic, applying updates, and triggering win/draw checks.
+    - WinDetection(): Evaluates the board for terminal game states.
+    - Join(client: ClientInfo): Assigns players to indices so as to manage allowed move order.
+
+Inputs:
+- Frontend JSON strings describing move attempts (via WebSocket messages).
+- ClientInfo objects representing players joining rooms.
+- Game key strings used by GameFactory to construct the correct game mode.
+
+Outputs:
+- Updated game state delivered through the 'View' property for broadcasting.
+- Boolean results of move attempts from 'Play()'. Used to tell RoomHandler whether or not to broadcast this view.
+- Updated internal player lists and game status indicators. (Not used as the moment but can be passed back with RoomHandler so as to tell frontend more if needed later)
+*/
+
+
+
 namespace Game.Core
 {
-  public enum State {Win, Draw, Playing}
+  public enum State { Win, Draw, Playing }
   public abstract class GameHandler
   {
     public abstract object View { get; }
@@ -52,7 +106,7 @@ namespace Game.Core
 
     public enum Cell { Empty, X, O }
     public override string GameKey => "tictactoe"; // Added in case we need to tell the game in roomhandler down the line
-    public Cell[,] Board { get; } = new Cell[3,3]; // The board state initalized using list comprehension to a list of 9 empty cells
+    public Cell[,] Board { get; } = new Cell[3, 3]; // The board state initalized using list comprehension to a list of 9 empty cells
     private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
     public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
     public override object View => Board;

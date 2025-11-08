@@ -1,4 +1,65 @@
 import { connect, send, WSReciever } from "./wsHelper.js";
+
+/*
+Prologue
+
+Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Creation Date: 11/08/2025
+
+Description:
+- Frontend implementation of the TicTacToe game UI.  
+- Responsible for drawing the game board, handling user interaction, maintaining a local
+  screen-side copy of the board, and synchronizing moves with the backend WebSocket server.
+- Provides click handling, canvas rendering logic, local board helpers, and imports
+  a WebSocket receiver that updates the UI whenever the backend broadcasts a new view.
+- Works with wsHelper.js, which handles connection setup, queuing, and message sending.
+
+Functions / Components:
+- drawGrid():
+    Draws the TicTacToe grid lines on the HTML canvas.
+
+- drawState():
+    Renders X's and O's based on the 'board' 2D array. Centers each character in a cell.
+
+- editBoard(row, col, state):
+    Safely updates the board with X/O/empty values, updates ARIA status text for accessability,
+    and triggers a redraw.
+
+- draw():
+    Clears the canvas and redraws the entire board (grid + symbols).
+    Called initially and after each change to the board.
+
+- clickHandler(event):
+    Computes which cell was clicked based on pixel coordinates then sends a move request
+    to the backend via 'send(socket, { event: "move", row, col })'. We might want to change the event later all depends on the expected values
+
+- windowResized():
+    Updates cached canvas width/height and recalculates cell size when the browser resizes.
+
+- init():
+    Entry point for the file; draws the initial empty grid.
+
+Sockets:
+- Creates the WebSocket connection via 'connect("tictactoe")'.
+- Uses WSReciever to process backend messages.
+  Expected message format:
+    {
+        event: "view",
+        board: [ [0,1,2], ... ]
+    }
+- Backend view updates replace the local board and trigger a full redraw.
+
+Inputs:
+- User mouse clicks (mapped to board cell positions)
+- Real-time board updates received from the backend WebSocket server
+- Window resize events
+
+Outputs:
+- Updated canvas showing the current TicTacToe board state
+- JSON move messages sent to the backend (row/col)
+- ARIA status updates for accessibility
+*/
+
 // Used to represent the square states without random magic numbers
 const empty = 0,
     square_x = 1,

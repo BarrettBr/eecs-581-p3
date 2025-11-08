@@ -1,3 +1,70 @@
+/*
+Prologue
+
+Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Creation Date: 11/08/2025
+
+Description:
+- Provides a collection of frontend utility functions for identifying the current game,
+  validating/creating room IDs, reading and writing URL parameters, establishing WebSocket
+  connections, and sending/receiving messages.
+- Acts as the client-side helper library to ensure users enter valid multiplayer rooms
+  and that the frontend reliably connects to the backend WebSocket server.
+- Also contains a lightweight queuing system that stores outbound messages while the socket
+  is still opening, preventing message loss during fast user interactions. This MIGHT cause issues later
+  but was mainly added as a preventative measure for now
+
+Functions:
+- findGame():
+    Extracts the first URL path segment (e.g., "/tictactoe/123" -> "tictactoe").
+    Used to determine which game type the user is currently accessing.
+
+- GuidValidate(id):
+    Validates whether a string matches the standard GUID format (8-4-4-4-12 hex groups).
+
+- setParam(name, value):
+    Updates or inserts a URL query parameter without reloading the page.
+
+- getParam(name):
+    Retrieves a query parameter value from the URL.
+
+- FindOrCreateRoomID():
+    Gets the "roomID" parameter; if missing or invalid, generates a new UUID and updates the URL.
+
+- connect(gameOverride):
+    Establishes a WebSocket connection to the backend.
+    Input:
+      - Optional game override name (string)
+    Behavior:
+      - Determines game + roomID
+      - Builds WebSocket URL with proper encoding
+      - Creates the WebSocket and initializes an outbound message queue in case of still connecting
+    Output:
+      - Returns a connected (or connecting) WebSocket object
+
+- send(socket, msg):
+    Sends a text message or JSON payload over the WebSocket.
+    Behavior:
+      - If OPEN -> sends immediately
+      - If CONNECTING -> stores message in socket._queue to send after onopen gets triggered
+    Output:
+      - boolean success/failure
+
+- WSReciever(socket, handler):
+    Attaches an onmessage listener that automatically parses JSON messages
+    and forwards them to a provided handler.
+
+Inputs:
+- URL path and query parameters
+- Frontend interaction deciding which game to enter or which messages to send
+- WebSocket messages from the backend. This goes to WSReciever
+
+Outputs:
+- Updated URL parameters
+- A connected WebSocket instance
+- JSON-parsed messages delivered to the UI layer
+*/
+
 function findGame() {
     // Gets and returns the first segment in the url pathname i.e: returns url.com/path/two this will return the "path" bit
     const segs = location.pathname.split("/").filter(Boolean); // Used filter boolean to remove blank "" that can happen at the start of splits based on urls
