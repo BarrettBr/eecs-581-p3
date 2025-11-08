@@ -127,8 +127,7 @@ namespace SocketHandler.Core
     public static async Task BroadcastView(object view, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      var fixedView = fixView(view);
-      BoardData dataToSend = new BoardData { Message = "view", Value = fixedView }; // Convert board to update object
+      BoardData dataToSend = new BoardData { Message = "view", Value = view }; // Convert board to update object
       string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
                                                                    // Loop over each client in the room and send them the update
@@ -148,17 +147,10 @@ namespace SocketHandler.Core
       }
     }
 
-    private static object fixView(object view)
-    {
-      // TODO: Might need to build this out in case view as an object needs to be treated differently pre-broadcast
-      return view;
-    }
-
     public static async Task SendBoardToClient(object view, ClientInfo client)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      var fixedView = fixView(view);
-      BoardData dataToSend = new BoardData { Message = "view", Value = fixedView }; // Convert board to update object
+      BoardData dataToSend = new BoardData { Message = "view", Value = view }; // Convert board to update object
       string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       try

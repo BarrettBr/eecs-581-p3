@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>eecs_581_p3</RootNamespace>
@@ -10,4 +12,11 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
+  <ItemGroup>
+  <Compile Remove="WebGames.Tests/**/*.cs" />
+  <None Remove="WebGames.Tests/**" />
+  <Content Remove="WebGames.Tests/**" />
+  <EmbeddedResource Remove="WebGames.Tests/**" />
+</ItemGroup>
+
 </Project>
