@@ -60,7 +60,7 @@ Outputs:
 
 namespace Game.Core
 {
-  public enum State { Win, Draw, Playing }
+  public enum State { Playing, Win, Draw }
   public abstract class GameHandler
   {
     public abstract object View { get; }

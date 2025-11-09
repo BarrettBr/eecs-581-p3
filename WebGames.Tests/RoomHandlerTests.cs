@@ -77,8 +77,9 @@ public class RoomHandlerTester
 
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
-
     var room = RoomHandler.FindRoomByRoomID(roomId);
+
+    // TODO: Remove client from room as of now there are 2 clients in this room
 
     Assert.NotNull(room);
     Assert.Single(room.Clients); 
@@ -121,6 +122,9 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
+    // TODO: Finish this, currently code creates an unused client makes another
+      // leave a room that isnt in one then checks if a room exists and returns if the room exists but the room was never made
+
     RoomHandler.LeaveRoom(nonClient);
     var room = RoomHandler.FindRoomByClientID(roomId);
     Assert.NotNull(room);
@@ -152,6 +156,8 @@ public class RoomHandlerTester
     Assert.NotNull(room); 
     var board_before = ((TicTacToe)room.Game).Board[0, 0]; 
 
+    // TODO: Recommend matching this to the wwwroot/js/ttt.js move event format as that is what should be recognized by the gamehandler
+      // Otherwise it might cause an error down the line where 2 areas read it in different
     var state = "{\"row\":0,\"col\":0}";
 
     await RoomHandler.HandleStateAsync(client1, state);
@@ -216,6 +222,8 @@ public class RoomHandlerTester
     Assert.NotNull(room); 
     var board_before = ((TicTacToe)room.Game).Board[1, 1];
 
+    // TODO: Recommend matching this to the wwwroot/js/ttt.js move event format as that is what should be recognized by the gamehandler
+      // Otherwise it might cause an error down the line where 2 areas read it in different
     var state = "{\"row\":1,\"col\":1}";
 
     await RoomHandler.HandleStateAsync(nonClient, state);
@@ -271,6 +279,10 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
+    // TODO: this test is more about the idea of "concurrently creating rooms" this means running each on a seperate thread and sending the request at the same time
+      // At the moment this is trying to create/join a room then do it again
+      // Look into multithreading in c# to run each on a different thread and look into running at around same time to simulate this
+      // Should end the join/create multithread and afterwards check to see if it was handled or if it happened differently/caused errors
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
 

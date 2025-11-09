@@ -21,7 +21,7 @@ Functions / Components:
 - drawState():
     Renders X's and O's based on the 'board' 2D array. Centers each character in a cell.
 
-- editBoard(row, col, state):
+- editBoard(Row, Col, state):
     Safely updates the board with X/O/empty values, updates ARIA status text for accessability,
     and triggers a redraw.
 
@@ -31,7 +31,7 @@ Functions / Components:
 
 - clickHandler(event):
     Computes which cell was clicked based on pixel coordinates then sends a move request
-    to the backend via 'send(socket, { event: "move", row, col })'. We might want to change the event later all depends on the expected values
+    to the backend via 'send(socket, { Event: "move", Row, Col })'. We might want to change the event later all depends on the expected values
 
 - windowResized():
     Updates cached canvas width/height and recalculates cell size when the browser resizes.
@@ -44,7 +44,7 @@ Sockets:
 - Uses WSReciever to process backend messages.
   Expected message format:
     {
-        event: "view",
+        Event: "view",
         board: [ [0,1,2], ... ]
     }
 - Backend view updates replace the local board and trigger a full redraw.
@@ -56,7 +56,7 @@ Inputs:
 
 Outputs:
 - Updated canvas showing the current TicTacToe board state
-- JSON move messages sent to the backend (row/col)
+- JSON move messages sent to the backend (Row/Col)
 - ARIA status updates for accessibility
 */
 
@@ -101,7 +101,7 @@ function windowResized() {
 var alt = true; // this variable has no value except for demos
 
 // This function is bound to the canvas onclick function and as expected it calculates the
-// row and column that the user clicked on and then edits the board appropriately
+// Row and Column that the user clicked on and then edits the board appropriately
 // Testing Methodology: Clicked on the screen a bunch of times and it worked, even at the bounds
 function clickHandler(event) {
     // Get the absolute X/Y clicked on and adjust it by the canvas' on screen position
@@ -114,7 +114,7 @@ function clickHandler(event) {
 
     // This "send" is how we send to the backend Idk what alt does so I left it for sake of not screwing you up later
     // However this is formed gamehandler will recieve/deal with so knowing the form here/backend is important
-    send(socket, { event: "move", row: clicked_row, col: clicked_col });
+    send(socket, { Event: "move", Row: clicked_row, Col: clicked_col });
     alt = !alt;
 }
 
@@ -165,7 +165,7 @@ function drawState() {
 
 // Used to add an X or an O to the board
 // Will likely need to be modified later to reduce code in the socket functions
-// input: the row and col of the square and the state to update it to
+// input: the Row and Col of the square and the state to update it to
 // Testing Methodology: tested using the console to call it dynamically and the board updated as intended
 //						Also worked when calling it on function load
 function editBoard(row, col, state) {
@@ -200,14 +200,20 @@ socket.onclose = () => console.log("Closed connection to socket server");
 
 WSReciever(socket, (msg) => {
     // Built this out a little to help you but this expects the backend to pass back
-    // { event: "view", board: 2D array}
+    // {
+    //    Event: "view",
+    //    Board: [[0,0,0],[0,0,0],[0,0,0]],
+    //    State: 0,1,2
+    // }
     // Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
     try {
-        if (msg.event === "view" && Array.isArray(msg.board)) {
-            board = msg.board;
+        if (msg.Event === "view" && Array.isArray(msg.Board)) {
+            const StateText = { 0: "Playing", 1: "Win", 2: "Draw" };
+            cur_state = StateText[msg.State]; // Will be set to one of the 3 strings above now
+            board = msg.Board;
             draw();
         } else {
-            console.warn("Unknown type of ws response", msg.event);
+            console.warn("Unknown type of ws response", msg.Event);
         }
     } catch (e) {
         console.warn("Bad WS sent from Server -> client", e, msg);

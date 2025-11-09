@@ -96,7 +96,7 @@ namespace SocketHandler.Core
     }
     public static async Task HandleStateAsync(ClientInfo client, string state)
     {
-      // Description: Takes a state from the frontend (ex NOT based on current state: {"click", row, col}) and passed to the GameHandler to handle/deal with
+      // Description: Takes a state from the frontend and pass to the GameHandler to handle/deal with
       // Inputs: Takes in the state update from from the frontend and passes to the backend gamehandler to run it on it's current board
       // Outputs: Doesn't return a value, instead it will let the gamehandler play method handle the state afterwards it passes off the new view to BroadcastView to send it out to all sockets
       var room = FindRoomByRoomID(client.RoomID);
@@ -127,7 +127,7 @@ namespace SocketHandler.Core
     public static async Task BroadcastView(object view, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      BoardData dataToSend = new BoardData { Message = "view", Value = view }; // Convert board to update object
+      BoardData dataToSend = new BoardData { Event = "view", Value = view, State = room.Game.state}; // Convert board to update object
       string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
                                                                    // Loop over each client in the room and send them the update
@@ -147,10 +147,10 @@ namespace SocketHandler.Core
       }
     }
 
-    public static async Task SendBoardToClient(object view, ClientInfo client)
+    public static async Task SendBoardToClient(object view, ClientInfo client, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      BoardData dataToSend = new BoardData { Message = "view", Value = view }; // Convert board to update object
+      BoardData dataToSend = new BoardData { Event = "view", Value = view, State = room.Game.state}; // Convert board to update object
       string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       try
@@ -165,8 +165,9 @@ namespace SocketHandler.Core
 
     public class BoardData
     {
-      public required string Message { get; set; }
+      public required string Event { get; set; }
       public required object Value { get; set; }
+      public required State State { get; set; }
     }
 
     public static void JoinOrCreateRoom(Guid roomID, string gameKey, ClientInfo client)
@@ -177,7 +178,7 @@ namespace SocketHandler.Core
       room.Clients[client.ClientID] = client;
 
       // Send board to client
-      _ = SendBoardToClient(room.Game.View, client);
+      _ = SendBoardToClient(room.Game.View, client, room);
       room.Game.Join(client);
     }
 
