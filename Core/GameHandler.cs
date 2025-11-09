@@ -68,7 +68,9 @@ namespace Game.Core
     public abstract bool Play(string state, ClientInfo client);
     public abstract void Join(ClientInfo client);
     public abstract State state { get; }
-    public abstract ConcurrentDictionary<ClientInfo, Index> Players { get; set; }
+    public abstract ConcurrentDictionary<ClientInfo, int> Players { get; set; }
+    public abstract int MaxPlayers { get; }
+
   }
 
   public static class GameFactory
@@ -105,12 +107,15 @@ namespace Game.Core
     //    The server acts as the single source of truth for game state and turn order.
 
     public enum Cell { Empty, X, O }
+    
     public override string GameKey => "tictactoe"; // Added in case we need to tell the game in roomhandler down the line
     public Cell[,] Board { get; } = new Cell[3, 3]; // The board state initalized using list comprehension to a list of 9 empty cells
     private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
     public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
     public override object View => Board;
-    public override ConcurrentDictionary<ClientInfo, Index> Players { get; set; } = new(); // Used to store a dictionary of players + indexes of join order.
+    public override int MaxPlayers => 2; // Used as "Max PLayers playing" not spectators, allows for easy checking against index in Players dictionary and quick play open room checking
+
+    public override ConcurrentDictionary<ClientInfo, int> Players { get; set; } = new(); // Used to store a dictionary of players + indexes of join order.
     public override bool Play(string state, ClientInfo client)
     {
       // Description:

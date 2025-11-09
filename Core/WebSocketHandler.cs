@@ -41,6 +41,8 @@ namespace SocketHandler.Core
   using Microsoft.AspNetCore.Http;
   using System.Net.WebSockets;
   using System.Collections.Concurrent;
+  using Microsoft.AspNetCore.Mvc.ModelBinding;
+
   public sealed class ClientInfo
   {
     // Description: Class that stores information about a client including their id, sokcet and the room they belong to.
@@ -58,7 +60,6 @@ namespace SocketHandler.Core
 
       // Parse information from request
       string requestRoute = context.Request.Path.ToString(); // The full requestRoute/token bit not the value, for the moment not used but maybe later if we need it.
-      var roomIDToken = context.Request.Query["roomID"]; // Change token to value of room id from URL (?roomID=value)
       var path = context.Request.Path.Value ?? "/"; // Null coalesing operator if left is null return just a / symbol
       var seg = path.Trim('/').Split('/', StringSplitOptions.RemoveEmptyEntries); // Remove front/end / symbol then split the remainder based on / symbols so now we get a bit like {"tictactoe", "roomID"} and so on
       var gameParam = context.Request.Query["game"]; // Since it is from a /ws bit we parse out the game
@@ -67,16 +68,10 @@ namespace SocketHandler.Core
                     : (seg.Length > 0 ? seg[0].ToLowerInvariant() : "tictactoe"); // Else default to tictactoe TODO: Might remove/redirect instead of default
 
 
-      // Convert token from string -> Guid
-      if (!Guid.TryParse(roomIDToken, out var roomID))
-      {
-        context.Response.StatusCode = 400;
-        await context.Response.WriteAsync("Missing roomID token");
-        return;
-      }
+      var quickParam = context.Request.Query["quickPlayJoin"].ToString();
+      bool quickPlay = quickParam.Equals("true", StringComparison.OrdinalIgnoreCase);
 
       // Get the underlying socket & generate a new GUID for the conneciton
-      // Originally was at the top but moved down as this upgrades the connection to a websocket one preventing sending back HTTP error codes in the case of stuff being messed up
       using var socket = await context.WebSockets.AcceptWebSocketAsync();
 
 
@@ -85,11 +80,55 @@ namespace SocketHandler.Core
       var client = new ClientInfo
       {
         ClientID = clientID,
-        RoomID = roomID,
+        RoomID = Guid.Empty,
         Socket = socket,
       };
       Connections[clientID] = client;
-      RoomHandler.JoinOrCreateRoom(roomID, gameKey, client);
+      if (quickPlay)
+      {
+        // Requested quickplay
+        var (joined, roomId, joinedGameKey) = RoomHandler.QuickPlay(client);
+
+        if (!joined)
+        {
+          // No rooms Free send to frontend for reactive response
+          var payload = System.Text.Json.JsonSerializer.Serialize(new
+          {
+            Event = "nofree"
+          });
+          var buffer = System.Text.Encoding.UTF8.GetBytes(payload);
+          await socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+        else
+        {
+          // Joined room send frontend new roomId + key so they can redirect
+          var payload = System.Text.Json.JsonSerializer.Serialize(new
+          {
+            Event = "quickPlayJoined",
+            RoomID = roomId,
+            GameKey = joinedGameKey
+          });
+          var buffer = System.Text.Encoding.UTF8.GetBytes(payload);
+          await socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+      }
+      else
+      {
+        // Change token to value of room id from URL (?roomID=value)
+        // Convert token from string -> Guid
+        var roomIDToken = context.Request.Query["roomID"];
+        if (!Guid.TryParse(roomIDToken, out var roomID))
+        {
+          var error = System.Text.Json.JsonSerializer.Serialize(new { Event = "error", Message = "Missing or invalid roomID" });
+          var buffer = System.Text.Encoding.UTF8.GetBytes(error);
+          await socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+          await socket.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Invalid roomID", CancellationToken.None);
+          Connections.TryRemove(clientID, out _);
+          return;
+        }
+        client.RoomID = roomID;
+        RoomHandler.JoinOrCreateRoom(roomID, gameKey, client);
+      }
 
       // Initialize containers for reading
       bool connectionAlive = true;

@@ -182,6 +182,44 @@ namespace SocketHandler.Core
       room.Game.Join(client);
     }
 
+    private static bool TryJoinRoom(Room room, ClientInfo client, out string gameKey)
+    {
+      // Helper function that tries to join a singular room with a lock returns bool based on if joined
+      gameKey = string.Empty;
+      lock (room.RoomLock)
+      {
+        if (!room.IsOpen) return false;
+        if (!room.Clients.TryAdd(client.ClientID, client)) return false;
+
+        client.RoomID = room.RoomID;
+        room.Game.Join(client);
+        _ = SendBoardToClient(room.Game.View, client, room);
+
+        gameKey = room.Game.GameKey;
+        return true;
+      }
+    }
+
+    public static (bool joinedExisting, Guid roomId, string gameKey) QuickPlay(ClientInfo client)
+    {
+      var snapshot = rooms.Values.ToArray().ToList();
+
+      foreach (var room in snapshot)
+      {
+        if (!room.IsOpen) continue;
+
+        // If room free return we joined it the id of it and the gamekey
+        // Used out on gamekey since if we fall into default case or something weird we can update it to what actually happens
+        if (TryJoinRoom(room, client, out var gameKey))
+        {
+          return (true, room.RoomID, gameKey);
+        }
+      }
+
+      // No Free Rooms
+      return (false, Guid.Empty, string.Empty);
+    }
+
     public static void LeaveRoom(ClientInfo client)
     {
       // Description: Used to remove a client from a room, afterwards if the room is empty it will delete the room itself. Basic cleanup function.
@@ -208,5 +246,6 @@ namespace SocketHandler.Core
     public required GameHandler Game { get; init; }
     public object RoomLock { get; } = new();
     public ConcurrentDictionary<Guid, ClientInfo> Clients { get; } = new();
+    public bool IsOpen => Clients.Count < Game.MaxPlayers && Game.state == State.Playing;
   }
 }
