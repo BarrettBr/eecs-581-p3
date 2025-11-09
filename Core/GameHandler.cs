@@ -71,7 +71,7 @@ namespace Game.Core
 		public abstract bool Play(string state, ClientInfo client);
 		public abstract void Join(ClientInfo client);
 		public abstract State state { get; }
-		public abstract ConcurrentDictionary<ClientInfo, int> Players { get; set; }
+		public abstract ConcurrentDictionary<Guid, int> Players { get; set; }
 		public abstract int MaxPlayers { get; }
 
 	}
@@ -111,28 +111,41 @@ namespace Game.Core
 		public Cell[,] Board { get; } = new Cell[3, 3]; // The board state initalized using list comprehension to a list of 9 empty cells
 		private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
 		public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
-		public override object View => Board;
+		public override object View
+		{
+			get
+			{
+				int rows = Board.GetLength(0);
+				int cols = Board.GetLength(1);
+
+				var output = new int[rows][];
+				for (int r = 0; r < rows; r++)
+				{
+					output[r] = new int[cols];
+					for (int c = 0; c < cols; c++)
+					{
+						output[r][c] = (int)Board[r, c];
+					}
+				}
+				return output; 
+			}
+		}
 		public override int MaxPlayers => 2; // Used as "Max PLayers playing" not spectators, allows for easy checking against index in Players dictionary and quick play open room checking
 
-		public override ConcurrentDictionary<ClientInfo, int> Players { get; set; } = new(); // Used to store a dictionary of players + indexes of join order.
+		public override ConcurrentDictionary<Guid, int> Players { get; set; } = new ConcurrentDictionary<Guid, int>(); // Used to store a dictionary of players + indexes of join order.
 
-		private Guid CurrentTurn()
+		private int CurrentTurn
 		{
-			// counts number of moves/filled cells to determine whose turn it is
-			int num_moves = 0;
-
-			for (int r = 0; r < 3; r++)
-				for (int c = 0; c < 3; c++)
+			get
+			{
+				int filled = 0;
+				foreach (var cell in Board)
 				{
-					if (Board[r, c] != Cell.Empty) { num_moves++; }
+					if (cell != Cell.Empty) { filled++; }
 				}
 
-			// 0 = X, 1 = O
-			int turn_index = num_moves % 2;
-
-			// Find the player with the index
-			var find_player = Players.FirstOrDefault(player => player.Value == turn_index);
-			return find_player.Key?.ClientID ?? Guid.Empty;
+				return filled % 2; 
+			}
 		}
 		public override bool Play(string state, ClientInfo client)
 		{
@@ -150,36 +163,33 @@ namespace Game.Core
 			//   Add base case validation (is game still playing, bounds check, correct turn, etc.)
 			//   Apply the move once validated.
 
+			Console.WriteLine($"PLAY invoked by client {client.ClientID}");
+			Console.WriteLine($"Players has keys: {string.Join(',', Players.Keys)}"); 
 			// make sure game is still playing
 			if (_state != State.Playing) { return false; }
 
 			// ensures only X and O can play
-			if (!Players.Keys.Any(p => p.ClientID == client.ClientID)) { return false; }
+			if (!Players.TryGetValue(client.ClientID, out int player_index)) { return false; }
 
 			// Must be the correct turn
-			if (client.ClientID != CurrentTurn()) { return false; } // 3 previous statements are for base case validations
+			if (player_index != 0 && player_index != 1) { return false; } // 3 previous statements are for base case validations
+			if (player_index != CurrentTurn) { return false; }
 
 			// Parse thru the JSON input string
-			int row, col; 
-			try
-			{
-				using var doc = JsonDocument.Parse(state);
-				row = doc.RootElement.GetProperty("row").GetInt32();
-				col = doc.RootElement.GetProperty("col").GetInt32();
-			}
-			catch { return false; }
+			int row, col;
+			using var doc = JsonDocument.Parse(state);
+			row = doc.RootElement.GetProperty("Row").GetInt32();
+			col = doc.RootElement.GetProperty("Col").GetInt32();
 
 			// check bounds
-			if (row < 0 || row >= 3 || col < 0 || col >= 3) { return false; }
+			if (row < 0 || row > 2 || col < 0 || col > 2) { return false; }
 
 			// check to see if cell is filled
 			if (Board[row, col] != Cell.Empty) { return false; }
 
 			// Check to see if the player is player X or player O
-			var player = Players.Keys.First(p => p.ClientID == client.ClientID);
-			int index = Players[player]; 
 
-			Board[row, col] = index == 0 ? Cell.X : Cell.O; // Player 0 = X, Player 1 = O 
+			Board[row, col] = player_index == 0 ? Cell.X : Cell.O; // Player 0 = X, Player 1 = O 
 
 			WinDetection(); // Used to update State
 			return true; // If nothing stopped it/the play was made we return true since we did a move
@@ -194,63 +204,63 @@ namespace Game.Core
 			// Outputs: None - updates the internal _state variable.
 			//
 			// Check rows and columns for a win
-	for (int i = 0; i < 3; i++)
-	{
-		// Check row i
-		if (Board[i, 0] != Cell.Empty &&
-			Board[i, 0] == Board[i, 1] &&
-			Board[i, 1] == Board[i, 2])
-		{
-			_state = State.Win;
-			return;
-		}
-
-		// Check column i
-		if (Board[0, i] != Cell.Empty &&
-			Board[0, i] == Board[1, i] &&
-			Board[1, i] == Board[2, i])
-		{
-			_state = State.Win;
-			return;
-		}
-	}
-	// Check diagonals
-	if (Board[0, 0] != Cell.Empty &&
-		Board[0, 0] == Board[1, 1] &&
-		Board[1, 1] == Board[2, 2])
-	{
-		_state = State.Win;
-		return;
-	}
-	if (Board[0, 2] != Cell.Empty &&
-		Board[0, 2] == Board[1, 1] &&
-		Board[1, 1] == Board[2, 0])
-	{
-		_state = State.Win;
-		return;
-	}
-	// Check for draw (no empty cells left)
-	bool hasEmpty = false;
-	for (int r = 0; r < 3; r++)
-	{
-		for (int c = 0; c < 3; c++)
-		{
-			if (Board[r, c] == Cell.Empty)
+			for (int i = 0; i < 3; i++)
 			{
-				hasEmpty = true;
-				break;
-			}
-		}
-		if (hasEmpty) break;
-	}
-	if (!hasEmpty)
-	{
-		_state = State.Draw;
-		return;
-	}
+				// Check row i
+				if (Board[i, 0] != Cell.Empty &&
+					Board[i, 0] == Board[i, 1] &&
+					Board[i, 1] == Board[i, 2])
+				{
+					_state = State.Win;
+					return;
+				}
 
-	// Otherwise, still playing
-	_state = State.Playing;
+				// Check column i
+				if (Board[0, i] != Cell.Empty &&
+					Board[0, i] == Board[1, i] &&
+					Board[1, i] == Board[2, i])
+				{
+					_state = State.Win;
+					return;
+				}
+			}
+			// Check diagonals
+			if (Board[0, 0] != Cell.Empty &&
+				Board[0, 0] == Board[1, 1] &&
+				Board[1, 1] == Board[2, 2])
+			{
+				_state = State.Win;
+				return;
+			}
+			if (Board[0, 2] != Cell.Empty &&
+				Board[0, 2] == Board[1, 1] &&
+				Board[1, 1] == Board[2, 0])
+			{
+				_state = State.Win;
+				return;
+			}
+			// Check for draw (no empty cells left)
+			bool hasEmpty = false;
+			for (int r = 0; r < 3; r++)
+			{
+				for (int c = 0; c < 3; c++)
+				{
+					if (Board[r, c] == Cell.Empty)
+					{
+						hasEmpty = true;
+						break;
+					}
+				}
+				if (hasEmpty) break;
+			}
+			if (!hasEmpty)
+			{
+				_state = State.Draw;
+				return;
+			}
+
+			// Otherwise, still playing
+			_state = State.Playing;
 
 		}
 
@@ -265,22 +275,14 @@ namespace Game.Core
 			// 
 			// TODO: Implement the adding of clients to an internal dictionary so as to allow for fast adding/lookup
 
-			// If player has already joined, do nothing
-			if (Players.Keys.Any(player => player.ClientID == client.ClientID)) { return; }
+			if (Players.ContainsKey(client.ClientID)) { return; }
 
-			// add first player (X)
-			if (Players.Count == 0)
-			{
-				Players.TryAdd(client, 0);
-				return;
-			}
-
-			// Add second player (O) 
-			if (Players.Count == 1)
-			{
-				Players.TryAdd(client, 1);
-				return;
-			}
+			if (Players.Count < MaxPlayers)
+            {
+				Players.TryAdd(client.ClientID, Players.Count);
+				Console.WriteLine($"Player joined: {client.ClientID} as player {Players.Count}"); 
+				return; 
+            }
 
 			if (Players.Count >= MaxPlayers)
 			{
