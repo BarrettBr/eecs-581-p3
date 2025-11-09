@@ -280,14 +280,29 @@ public class RoomHandlerTester
     };
 
     // TODO: this test is more about the idea of "concurrently creating rooms" this means running each on a seperate thread and sending the request at the same time
-      // At the moment this is trying to create/join a room then do it again
-      // Look into multithreading in c# to run each on a different thread and look into running at around same time to simulate this
-      // Should end the join/create multithread and afterwards check to see if it was handled or if it happened differently/caused errors
+    // At the moment this is trying to create/join a room then do it again
+    // Look into multithreading in c# to run each on a different thread and look into running at around same time to simulate this
+    // Should end the join/create multithread and afterwards check to see if it was handled or if it happened differently/caused errors
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
     Assert.NotNull(room);
-    Assert.Equal(2, room.Clients.Count); 
+    Assert.Equal(2, room.Clients.Count);
+  }
+  [Fact]
+  public void QuickPlayTest()
+  {
+    // Test adding a client to a room and then having another join through quickplay
+  }
+  [Fact]
+  public void QuickPlayRoomsFullTest()
+  {
+    // Test adding a client to a room when rooms are full
+  }
+  [Fact]
+  public void QuickPlayMalformedClientTest()
+  {
+    // Test adding a malformed client to a room via quickplay
   }
 }
