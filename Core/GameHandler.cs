@@ -134,7 +134,7 @@ namespace Game.Core
 
 			// Find the player with the index
 			var find_player = Players.FirstOrDefault(player => player.Value == turn_index);
-			return find_player.Key?.ClientID ?? Guid.Empty; 
+			return find_player.Key?.ClientID ?? Guid.Empty;
 		}
 		public override bool Play(string state, ClientInfo client)
 		{
@@ -179,7 +179,25 @@ namespace Game.Core
 			// Ouputs: None - Updates internal "players" variable
 			// 
 			// TODO: Implement the adding of clients to an internal dictionary so as to allow for fast adding/lookup
-		}
 
+			// If player has already joined, do nothing
+			if (Players.Keys.Any(player => player.ClientID == client.ClientID)) { return; }
+
+			// add first player (X)
+			if (Players.Count == 0)
+			{
+				Players.TryAdd(client, 0);
+				return;
+			}
+
+			// Add second player (O) 
+			if (Players.Count == 1)
+			{
+				Players.TryAdd(client, 1);
+				return;
+			}		
+
+			// TODO: Add third person as spectator
+		}
 	}
 }
