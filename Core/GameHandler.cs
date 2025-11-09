@@ -183,7 +183,7 @@ namespace Game.Core
 			var player = Players.Keys.First(p => p.ClientID == client.ClientID);
 			int index = Players[player]; 
 
-			Cell 
+			Board[row, col] = index == 0 ? Cell.X : Cell.O; // Player 0 = X, Player 1 = O 
 
 			WinDetection(); // Used to update State
 			return true; // If nothing stopped it/the play was made we return true since we did a move
@@ -218,7 +218,6 @@ namespace Game.Core
 			return;
 		}
 	}
-
 	// Check diagonals
 	if (Board[0, 0] != Cell.Empty &&
 		Board[0, 0] == Board[1, 1] &&
@@ -227,7 +226,6 @@ namespace Game.Core
 		_state = State.Win;
 		return;
 	}
-
 	if (Board[0, 2] != Cell.Empty &&
 		Board[0, 2] == Board[1, 1] &&
 		Board[1, 1] == Board[2, 0])
@@ -235,7 +233,6 @@ namespace Game.Core
 		_state = State.Win;
 		return;
 	}
-
 	// Check for draw (no empty cells left)
 	bool hasEmpty = false;
 	for (int r = 0; r < 3; r++)
@@ -250,7 +247,6 @@ namespace Game.Core
 		}
 		if (hasEmpty) break;
 	}
-
 	if (!hasEmpty)
 	{
 		_state = State.Draw;
@@ -290,7 +286,11 @@ namespace Game.Core
 				return;
 			}
 
-			// TODO: Add third person as spectator
+			if (Players.Count >= MaxPlayers)
+			{
+				// Optional: Track spectators separately if needed
+				return;
+			}
 		}
 	}
 }
