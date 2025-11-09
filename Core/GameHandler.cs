@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Data;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualBasic;
 using SocketHandler.Core;
@@ -152,6 +154,36 @@ namespace Game.Core
 			//   Add base case validation (is game still playing, bounds check, correct turn, etc.)
 			//   Apply the move once validated.
 
+			// make sure game is still playing
+			if (_state != State.Playing) { return false; }
+
+			// ensures only X and O can play
+			if (!Players.Keys.Any(p => p.ClientID == client.ClientID)) { return false; }
+
+			// Must be the correct turn
+			if (client.ClientID != CurrentTurn()) { return false; } // 3 previous statements are for base case validations
+
+			// Parse thru the JSON input string
+			int row, col; 
+			try
+			{
+				using var doc = JsonDocument.Parse(state);
+				row = doc.RootElement.GetProperty("row").GetInt32();
+				col = doc.RootElement.GetProperty("col").GetInt32();
+			}
+			catch { return false; }
+
+			// check bounds
+			if (row < 0 || row >= 3 || col < 0 || col >= 3) { return false; }
+
+			// check to see if cell is filled
+			if (Board[row, col] != Cell.Empty) { return false; }
+
+			// Check to see if the player is player X or player O
+			var player = Players.Keys.First(p => p.ClientID == client.ClientID);
+			int index = Players[player]; 
+
+			Cell 
 
 			WinDetection(); // Used to update State
 			return true; // If nothing stopped it/the play was made we return true since we did a move
@@ -165,71 +197,9 @@ namespace Game.Core
 			// Inputs: None - uses the current board state.
 			// Outputs: None - updates the internal _state variable.
 			//
-			// Check rows and columns for a win
-		for (int i = 0; i < 3; i++)
-		{
-			// Check row i
-			if (Board[i, 0] != Cell.Empty &&
-				Board[i, 0] == Board[i, 1] &&
-				Board[i, 1] == Board[i, 2])
-			{
-				_state = State.Win;
-				return;
-			}
+			// TODO: Implement win/draw detection logic.
 
-			// Check column i
-			if (Board[0, i] != Cell.Empty &&
-				Board[0, i] == Board[1, i] &&
-				Board[1, i] == Board[2, i])
-			{
-				_state = State.Win;
-				return;
-			}
 		}
-
-		// Check diagonals
-		if (Board[0, 0] != Cell.Empty &&
-			Board[0, 0] == Board[1, 1] &&
-			Board[1, 1] == Board[2, 2])
-		{
-			_state = State.Win;
-			return;
-		}
-
-		if (Board[0, 2] != Cell.Empty &&
-			Board[0, 2] == Board[1, 1] &&
-			Board[1, 1] == Board[2, 0])
-		{
-			_state = State.Win;
-			return;
-		}
-
-		// Check for draw (no empty cells left)
-		bool hasEmpty = false;
-		for (int r = 0; r < 3; r++)
-		{
-			for (int c = 0; c < 3; c++)
-			{
-				if (Board[r, c] == Cell.Empty)
-				{
-					hasEmpty = true;
-					break;
-				}
-			}
-			if (hasEmpty) break;
-		}
-
-		if (!hasEmpty)
-		{
-			_state = State.Draw;
-			return;
-		}
-
-		// Otherwise, still playing
-		_state = State.Playing;
-	}
-
-		
 
 		public override void Join(ClientInfo client)
 		{
@@ -257,7 +227,7 @@ namespace Game.Core
 			{
 				Players.TryAdd(client, 1);
 				return;
-			}		
+			}
 
 			// TODO: Add third person as spectator
 		}
