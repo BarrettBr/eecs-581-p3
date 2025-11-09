@@ -87,10 +87,6 @@ namespace Game.Core
 			};
 		}
 	}
-
-	// TODO: Implement Play() and WinDetection().
-	//  Play() should update the board and check if the move is valid.
-	//  WinDetection() should evaluate the board and update the current State.
 	// Notes:
 	//  Consider adding a public "Winner" field to the View so the frontend can display who won.
 	//  You may also add a "NextTurn" variable to track whose move is expected.
