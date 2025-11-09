@@ -207,10 +207,10 @@ WSReciever(socket, (msg) => {
     // }
     // Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
     try {
-        if (msg.Event === "view" && Array.isArray(msg.Board)) {
+        if (msg.Event === "view" && Array.isArray(msg.Value)) {
             const StateText = { 0: "Playing", 1: "Win", 2: "Draw" };
             cur_state = StateText[msg.State]; // Will be set to one of the 3 strings above now
-            board = msg.Board;
+            board = msg.Value;
             draw();
         } else {
             console.warn("Unknown type of ws response", msg.Event);
