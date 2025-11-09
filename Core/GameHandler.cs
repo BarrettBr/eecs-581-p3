@@ -165,9 +165,71 @@ namespace Game.Core
 			// Inputs: None - uses the current board state.
 			// Outputs: None - updates the internal _state variable.
 			//
-			// TODO: Implement win/draw detection logic.
+			// Check rows and columns for a win
+		for (int i = 0; i < 3; i++)
+		{
+			// Check row i
+			if (Board[i, 0] != Cell.Empty &&
+				Board[i, 0] == Board[i, 1] &&
+				Board[i, 1] == Board[i, 2])
+			{
+				_state = State.Win;
+				return;
+			}
 
+			// Check column i
+			if (Board[0, i] != Cell.Empty &&
+				Board[0, i] == Board[1, i] &&
+				Board[1, i] == Board[2, i])
+			{
+				_state = State.Win;
+				return;
+			}
 		}
+
+		// Check diagonals
+		if (Board[0, 0] != Cell.Empty &&
+			Board[0, 0] == Board[1, 1] &&
+			Board[1, 1] == Board[2, 2])
+		{
+			_state = State.Win;
+			return;
+		}
+
+		if (Board[0, 2] != Cell.Empty &&
+			Board[0, 2] == Board[1, 1] &&
+			Board[1, 1] == Board[2, 0])
+		{
+			_state = State.Win;
+			return;
+		}
+
+		// Check for draw (no empty cells left)
+		bool hasEmpty = false;
+		for (int r = 0; r < 3; r++)
+		{
+			for (int c = 0; c < 3; c++)
+			{
+				if (Board[r, c] == Cell.Empty)
+				{
+					hasEmpty = true;
+					break;
+				}
+			}
+			if (hasEmpty) break;
+		}
+
+		if (!hasEmpty)
+		{
+			_state = State.Draw;
+			return;
+		}
+
+		// Otherwise, still playing
+		_state = State.Playing;
+	}
+
+		
 
 		public override void Join(ClientInfo client)
 		{
