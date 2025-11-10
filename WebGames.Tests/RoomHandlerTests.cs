@@ -263,7 +263,7 @@ public class RoomHandlerTester
     Assert.Equal(2, room.Clients.Count); 
   }
   [Fact]
-  public void CreateSameRoomTest()
+  public async Task CreateSameRoomTest()
   {
     // If creating same room concurrently does it handle this
     var roomId = Guid.NewGuid();
@@ -287,7 +287,7 @@ public class RoomHandlerTester
     // Should end the join/create multithread and afterwards check to see if it was handled or if it happened differently/caused errors
     var t1 = Task.Run(() => RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1));
     var t2 = Task.Run(() => RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2));
-    Task.WaitAll(t1, t2);
+    await Task.WhenAll(t1, t2);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
     Assert.NotNull(room);
@@ -297,8 +297,6 @@ public class RoomHandlerTester
   public void QuickPlayTest()
   {
     // Test adding a client to a room and then having another join through quickplay
-    RoomHandler.rooms.Clear(); // Clear existing rooms to control QuickPlay behavior
-
     var roomId = Guid.NewGuid();
     var p1 = NewClient(roomId);
     RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p1);

@@ -58,7 +58,7 @@ namespace SocketHandler.Core
     private static RoomHandler? instance = null;
     // Lock
     private static readonly object padlock = new(); // Lock used for making the roomhandler instance work properly
-    public static readonly ConcurrentDictionary<Guid, Room> rooms = new(); // <RoomID, Room> Used to store a list of all rooms for easy calling upon
+    private static readonly ConcurrentDictionary<Guid, Room> rooms = new(); // <RoomID, Room> Used to store a list of all rooms for easy calling upon
 
     // Empty Class Constructor to prevent the class from being declared as an object without calling RoomHandler.Instance
     RoomHandler() { }

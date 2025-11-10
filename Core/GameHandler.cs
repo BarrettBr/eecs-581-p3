@@ -127,7 +127,7 @@ namespace Game.Core
 						output[r][c] = (int)Board[r, c];
 					}
 				}
-				return output; 
+				return output;
 			}
 		}
 		public override int MaxPlayers => 2; // Used as "Max PLayers playing" not spectators, allows for easy checking against index in Players dictionary and quick play open room checking
@@ -163,8 +163,8 @@ namespace Game.Core
 			//   Add base case validation (is game still playing, bounds check, correct turn, etc.)
 			//   Apply the move once validated.
 
-			Console.WriteLine($"PLAY invoked by client {client.ClientID}");
-			Console.WriteLine($"Players has keys: {string.Join(',', Players.Keys)}"); 
+			// Console.WriteLine($"PLAY invoked by client {client.ClientID}");
+			// Console.WriteLine($"Players has keys: {string.Join(',', Players.Keys)}"); 
 			// make sure game is still playing
 			if (_state != State.Playing) { return false; }
 

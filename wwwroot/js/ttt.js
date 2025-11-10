@@ -84,6 +84,7 @@ var status_element = document.getElementById("game-status");
 // ***IMPORTANT** it is best practice to use the editBoard() function
 // to edit the state in any way
 // TODO: Match Board to match format of backend board or upon recieving read/update this properly (More of a note about format mismatch *could just backend that works)
+let cur_state = "Playing";
 var board = [
     [empty, empty, empty],
     [empty, empty, empty],
@@ -206,10 +207,17 @@ WSReciever(socket, (msg) => {
     //    State: 0,1,2
     // }
     // Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
-    console.log("VIEW MSG:", msg); 
-    if (msg.Event === "view"){
-        board = msg.Value; 
-        draw(); 
+    try {
+        if (msg?.Event === "view" && Array.isArray(msg.Value)) {
+            const StateText = ["Playing", "Win", "Draw"];
+            cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
+            board = msg.Value;
+            draw();
+        } else {
+            console.warn("Unknown type of ws response", msg.Event);
+        }
+    } catch (e) {
+        console.warn("Bad WS sent from Server -> client", e, msg);
     }
 });
 // ---------------  ---------------
