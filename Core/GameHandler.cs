@@ -111,42 +111,12 @@ namespace Game.Core
 		public Cell[,] Board { get; } = new Cell[3, 3]; // The board state initalized using list comprehension to a list of 9 empty cells
 		private State _state = State.Playing; // Set the inital state to "playing" to signify a match has started
 		public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
-		public override object View
-		{
-			get
-			{
-				int rows = Board.GetLength(0);
-				int cols = Board.GetLength(1);
-
-				var output = new int[rows][];
-				for (int r = 0; r < rows; r++)
-				{
-					output[r] = new int[cols];
-					for (int c = 0; c < cols; c++)
-					{
-						output[r][c] = (int)Board[r, c];
-					}
-				}
-				return output;
-			}
-		}
+    public override object View => Board;
 		public override int MaxPlayers => 2; // Used as "Max PLayers playing" not spectators, allows for easy checking against index in Players dictionary and quick play open room checking
 
 		public override ConcurrentDictionary<Guid, int> Players { get; set; } = new ConcurrentDictionary<Guid, int>(); // Used to store a dictionary of players + indexes of join order.
 
-		private int CurrentTurn
-		{
-			get
-			{
-				int filled = 0;
-				foreach (var cell in Board)
-				{
-					if (cell != Cell.Empty) { filled++; }
-				}
-
-				return filled % 2; 
-			}
-		}
+    private int CurrentTurn = 0;
 		public override bool Play(string state, ClientInfo client)
 		{
 			// Description:
@@ -190,7 +160,7 @@ namespace Game.Core
 			// Check to see if the player is player X or player O
 
 			Board[row, col] = player_index == 0 ? Cell.X : Cell.O; // Player 0 = X, Player 1 = O 
-
+      CurrentTurn = CurrentTurn == 0 ? 1 : 0;
 			WinDetection(); // Used to update State
 			return true; // If nothing stopped it/the play was made we return true since we did a move
 		}
@@ -273,16 +243,14 @@ namespace Game.Core
 			// Inputs: The client themselves
 			// Ouputs: None - Updates internal "players" variable
 			// 
-			// TODO: Implement the adding of clients to an internal dictionary so as to allow for fast adding/lookup
-
 			if (Players.ContainsKey(client.ClientID)) { return; }
 
 			if (Players.Count < MaxPlayers)
-            {
+      {
 				Players.TryAdd(client.ClientID, Players.Count);
 				Console.WriteLine($"Player joined: {client.ClientID} as player {Players.Count}"); 
 				return; 
-            }
+      }
 
 			if (Players.Count >= MaxPlayers)
 			{
