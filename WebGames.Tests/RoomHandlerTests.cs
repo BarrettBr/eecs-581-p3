@@ -80,6 +80,7 @@ public class RoomHandlerTester
     var room = RoomHandler.FindRoomByRoomID(roomId);
 
     // TODO: Remove client from room as of now there are 2 clients in this room
+    RoomHandler.LeaveRoom(client2);
 
     Assert.NotNull(room);
     Assert.Single(room.Clients); 
@@ -124,9 +125,10 @@ public class RoomHandlerTester
 
     // TODO: Finish this, currently code creates an unused client makes another
       // leave a room that isnt in one then checks if a room exists and returns if the room exists but the room was never made
-
+    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client);
     RoomHandler.LeaveRoom(nonClient);
-    var room = RoomHandler.FindRoomByClientID(roomId);
+    var room = RoomHandler.FindRoomByRoomID(roomId);
+
     Assert.NotNull(room);
     Assert.Single(room.Clients); 
   }
@@ -158,7 +160,7 @@ public class RoomHandlerTester
 
     // TODO: Recommend matching this to the wwwroot/js/ttt.js move event format as that is what should be recognized by the gamehandler
       // Otherwise it might cause an error down the line where 2 areas read it in different
-    var state = "{\"row\":0,\"col\":0}";
+    var state = "{\"Row\":0,\"Col\":0}";
 
     await RoomHandler.HandleStateAsync(client1, state);
 
@@ -187,7 +189,7 @@ public class RoomHandlerTester
 
     var badstate1 = "not_json";
     var badstate2 = "{\"wrong\":true}";
-    var badstate3 = "{\"row\":100}";
+    var badstate3 = "{\"Row\":100,\"Col\":0}";
 
     await RoomHandler.HandleStateAsync(client, badstate1);
     await RoomHandler.HandleStateAsync(client, badstate2);
@@ -224,7 +226,7 @@ public class RoomHandlerTester
 
     // TODO: Recommend matching this to the wwwroot/js/ttt.js move event format as that is what should be recognized by the gamehandler
       // Otherwise it might cause an error down the line where 2 areas read it in different
-    var state = "{\"row\":1,\"col\":1}";
+    var state = "{\"Row\":1,\"Col\":1}";
 
     await RoomHandler.HandleStateAsync(nonClient, state);
 
@@ -283,8 +285,9 @@ public class RoomHandlerTester
     // At the moment this is trying to create/join a room then do it again
     // Look into multithreading in c# to run each on a different thread and look into running at around same time to simulate this
     // Should end the join/create multithread and afterwards check to see if it was handled or if it happened differently/caused errors
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
+    var t1 = Task.Run(() => RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1));
+    var t2 = Task.Run(() => RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2));
+    Task.WaitAll(t1, t2);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
     Assert.NotNull(room);
@@ -294,15 +297,58 @@ public class RoomHandlerTester
   public void QuickPlayTest()
   {
     // Test adding a client to a room and then having another join through quickplay
+    RoomHandler.rooms.Clear(); // Clear existing rooms to control QuickPlay behavior
+
+    var roomId = Guid.NewGuid();
+    var p1 = NewClient(roomId);
+    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p1);
+
+    var p2 = NewClient(Guid.Empty);
+    var (joined, returnedRoomId, gameKey) = RoomHandler.QuickPlay(p2);
+
+    Assert.True(joined);
+    Assert.Equal(roomId, returnedRoomId);
+    Assert.Equal("tictactoe", gameKey);
   }
   [Fact]
   public void QuickPlayRoomsFullTest()
   {
     // Test adding a client to a room when rooms are full
+    var roomId = Guid.NewGuid();
+    var p1 = NewClient(roomId);
+    var p2 = NewClient(roomId);
+    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p1);
+    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p2);
+
+    var p3 = NewClient(Guid.Empty);
+    var (joined, _, _) = RoomHandler.QuickPlay(p3);
+    Assert.False(joined);
   }
   [Fact]
   public void QuickPlayMalformedClientTest()
   {
     // Test adding a malformed client to a room via quickplay
+    Assert.Throws<NullReferenceException>(() => RoomHandler.QuickPlay(null!));
+  }
+
+  // Helper methods
+  private static ClientInfo NewClient(Guid roomId) => new()
+  {
+      ClientID = Guid.NewGuid(),
+      RoomID   = roomId,
+      Socket   = new ClientWebSocket()
+  };
+
+  private static (Room room, ClientInfo c1, ClientInfo c2) SetupTwoPlayerRoom()
+  {
+      var roomId = Guid.NewGuid();
+      var c1 = NewClient(roomId);
+      var c2 = NewClient(roomId);
+
+      RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", c1);
+      RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", c2);
+
+      var room = RoomHandler.FindRoomByRoomID(roomId)!;
+      return (room, c1, c2);
   }
 }
