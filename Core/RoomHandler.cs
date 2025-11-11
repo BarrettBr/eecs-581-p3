@@ -132,7 +132,7 @@ namespace SocketHandler.Core
             }
             if (changed)
             {
-              await BroadcastView(room.Game.View, room);
+              await BroadcastView(room, "view");
             }
             return;
           case "room.lock":
@@ -148,6 +148,7 @@ namespace SocketHandler.Core
               if (locked != null)
               {
                 room.QuickPlayLocked = locked.Value;
+                await BroadcastView(room, "room.locked");
               }
             } catch {}
             return;
@@ -160,7 +161,7 @@ namespace SocketHandler.Core
             }
             if (ChangedDefault)
             {
-              await BroadcastView(room.Game.View, room);
+              await BroadcastView(room, "view");
             }
             return;
         }
@@ -171,13 +172,38 @@ namespace SocketHandler.Core
       }
     }
 
-    public static async Task BroadcastView(object view, Room room)
+    public static async Task BroadcastView(Room room, string eventType)
     {
-      // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      BoardData dataToSend = new BoardData { Event = "view", Value = view, State = room.Game.state}; // Convert board to update object
-      string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
-      var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
-                                                                   // Loop over each client in the room and send them the update
+      object payload = eventType switch
+      {
+          "view" => new
+          {
+              Event = "view",
+              Value = room.Game.View,
+              State = room.Game.state
+          },
+
+          "room.locked" => new
+          {
+              Event = "room.locked",
+              locked = room.QuickPlayLocked
+          },
+
+          _ => new
+          {
+              Event = "view",
+              Value = room.Game.View,
+              State = room.Game.state
+          }
+      };
+
+      await BroadcastAsync(room, payload);
+    }
+    
+    private static async Task BroadcastAsync(Room room, object payload)
+    {
+      string jsonString = JsonConvert.SerializeObject(payload, Formatting.Indented);
+      var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString);
 
       foreach (var cl in room.Clients.ToArray())
       {
