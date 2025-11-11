@@ -1,4 +1,4 @@
-import { WSReciever } from "/js/wsHelper.js";
+import { WSReceiver } from "/js/wsHelper.js";
 
 document.getElementById("quick-play").addEventListener("click", () => {
     console.log("Hit home.js click");
@@ -7,7 +7,7 @@ document.getElementById("quick-play").addEventListener("click", () => {
     const socket = new WebSocket(url);
 
     console.log("Grabbed URLS");
-    WSReciever(socket, (msg) => {
+    WSReceiver(socket, (msg) => {
         if (msg.Event === "quickPlayJoined") {
             // Redirect user to the game route with the roomID
             const game = msg.GameKey;

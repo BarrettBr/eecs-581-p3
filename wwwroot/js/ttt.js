@@ -1,4 +1,4 @@
-import { connect, send, WSReciever } from "./wsHelper.js";
+import { connect, send, WSReceiver } from "./wsHelper.js";
 
 /*
 Prologue
@@ -41,7 +41,7 @@ Functions / Components:
 
 Sockets:
 - Creates the WebSocket connection via 'connect("tictactoe")'.
-- Uses WSReciever to process backend messages.
+- Uses WSReceiver to process backend messages.
   Expected message format:
     {
         Event: "view",
@@ -209,7 +209,7 @@ const socket = connect("tictactoe");
 
 socket.onclose = () => console.log("Closed connection to socket server");
 
-WSReciever(socket, (msg) => {
+WSReceiver(socket, (msg) => {
     // Built this out a little to help you but this expects the backend to pass back
     // {
     //    Event: "view",
@@ -233,6 +233,11 @@ WSReciever(socket, (msg) => {
                     lockImg.classList.remove("locked");
                 }
             }
+        } else if (msg.Event === "chat") {
+            // {Event: "chat", Chat: chat_msg, From: Player_index} Player_index: 0 for p1 1 for p2
+            // Player_index: int
+            // Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
+            // as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
         } else {
             console.warn("Unknown type of ws response", msg.Event);
         }

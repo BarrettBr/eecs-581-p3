@@ -132,7 +132,7 @@ namespace SocketHandler.Core
             }
             if (changed)
             {
-              await BroadcastView(room, "view");
+              await BroadcastView(room, "view", client);
             }
             return;
           case "room.lock":
@@ -148,9 +148,23 @@ namespace SocketHandler.Core
               if (locked != null)
               {
                 room.QuickPlayLocked = locked.Value;
-                await BroadcastView(room, "room.locked");
+                await BroadcastView(room, "room.locked", client);
               }
             } catch {}
+            return;
+          case "chat":
+            // Created base sending of a chat from Room -> clients
+            try
+            {
+              // Parse out the chat from the json state and then 
+              var chat = Newtonsoft.Json.Linq.JObject.Parse(state);
+              var msg = (string?)chat["text"] ?? "";
+              await BroadcastView(room, "chat", client, msg);
+            }
+            catch (Exception ex)
+            {
+              Console.WriteLine("Error Occured while sending chat:", ex);
+            }
             return;
           default:
             // Default case that is hit upon not having an event defined (Null events go here)
@@ -161,7 +175,7 @@ namespace SocketHandler.Core
             }
             if (ChangedDefault)
             {
-              await BroadcastView(room, "view");
+              await BroadcastView(room, "view", client);
             }
             return;
         }
@@ -172,8 +186,9 @@ namespace SocketHandler.Core
       }
     }
 
-    public static async Task BroadcastView(Room room, string eventType)
+    public static async Task BroadcastView(Room room, string eventType, ClientInfo client, object? state = null)
     {
+      room.Game.Players.TryGetValue(client.ClientID, out int sender);
       object payload = eventType switch
       {
           "view" => new
@@ -188,7 +203,12 @@ namespace SocketHandler.Core
               Event = "room.locked",
               locked = room.QuickPlayLocked
           },
-
+          "chat" => new
+          {
+            Event = "chat",
+            Chat = state,
+            From = sender
+          },
           _ => new
           {
               Event = "view",

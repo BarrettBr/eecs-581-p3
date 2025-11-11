@@ -50,14 +50,14 @@ Functions:
     Output:
       - boolean success/failure
 
-- WSReciever(socket, handler):
+- WSReceiver(socket, handler):
     Attaches an onmessage listener that automatically parses JSON messages
     and forwards them to a provided handler.
 
 Inputs:
 - URL path and query parameters
 - Frontend interaction deciding which game to enter or which messages to send
-- WebSocket messages from the backend. This goes to WSReciever
+- WebSocket messages from the backend. This goes to WSReceiver
 
 Outputs:
 - Updated URL parameters
@@ -146,6 +146,6 @@ export function send(socket, msg) {
     return false;
 }
 
-export function WSReciever(socket, handler) {
+export function WSReceiver(socket, handler) {
     socket.onmessage = (event) => handler(JSON.parse(event.data));
 }
