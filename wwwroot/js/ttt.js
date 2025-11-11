@@ -119,6 +119,9 @@ function clickHandler(event) {
     alt = !alt;
 }
 
+// TODO: Need to add a "lock" item that a user can click on the frontend and when clicked it does the below command to send a request to lock the room
+// send(socket, {Event: "room.lock", Lock: true}) // Use Lock: false to unlock can just track this in an internal bool var and flip it in wsreciever room.locked
+
 // Used for drawing the basic lines to the screen
 // Testing Methodology: I ran this function on load and the lines appear as expected
 function drawGrid() {
@@ -213,6 +216,10 @@ WSReciever(socket, (msg) => {
             cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
             board = msg.Value;
             draw();
+        } else if (msg.Event === "room.locked") {
+            // Make this do the visual "lock"
+            // This is triggered upon the backend recieving a {event: "room.lock"} from the first user in a room
+            // FYI room lock is a thing used if you want to make your room non-joinable by other users using quickplay.
         } else {
             console.warn("Unknown type of ws response", msg.Event);
         }

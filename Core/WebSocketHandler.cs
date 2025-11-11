@@ -87,9 +87,9 @@ namespace SocketHandler.Core
       if (quickPlay)
       {
         // Requested quickplay
-        var (joined, roomId, joinedGameKey) = RoomHandler.QuickPlay(client);
+        var (found, roomId, joinedGameKey) = RoomHandler.QuickPlay();
 
-        if (!joined)
+        if (!found)
         {
           // No rooms Free send to frontend for reactive response
           var payload = System.Text.Json.JsonSerializer.Serialize(new
@@ -110,6 +110,9 @@ namespace SocketHandler.Core
           });
           var buffer = System.Text.Encoding.UTF8.GetBytes(payload);
           await socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
+          await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "redirect", CancellationToken.None);
+          Connections.TryRemove(clientID, out _);
+          return;
         }
       }
       else
@@ -127,7 +130,7 @@ namespace SocketHandler.Core
           return;
         }
         client.RoomID = roomID;
-        RoomHandler.JoinOrCreateRoom(roomID, gameKey, client);
+        await RoomHandler.JoinOrCreateRoomAsync(roomID, gameKey, client);
       }
 
       // Initialize containers for reading

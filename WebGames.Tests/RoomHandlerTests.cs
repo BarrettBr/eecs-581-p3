@@ -9,7 +9,7 @@ using Xunit;
 public class RoomHandlerTester
 {
   [Fact]
-  public void CreateRoomTest()
+  public async Task CreateRoomTest()
   {
     // Console.WriteLine("Reached CreateRoomTest"); // Any Console.WriteLines() will be printed mid-test so useful for debugging
     // Create a Client/RoomId to use later
@@ -23,14 +23,14 @@ public class RoomHandlerTester
     };
 
     // Create a room then fetch it
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client);
     var room = RoomHandler.FindRoomByRoomID(roomId);
 
     // Test that the room actually exists
     Assert.NotNull(room);
   }
   [Fact]
-  public void FindRoomByClientTest()
+  public async Task FindRoomByClientTest()
   {
     // Create a client/room like CreateRoomTest and then find the room by the clients id
     var roomId = Guid.NewGuid();
@@ -48,8 +48,8 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client1);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client2);
 
     var room = RoomHandler.FindRoomByClientID(client2.ClientID);
 
@@ -57,7 +57,7 @@ public class RoomHandlerTester
     Assert.Equal(roomId, room.RoomID); 
   }
   [Fact]
-  public void LeaveRoomTest()
+  public async Task LeaveRoomTest()
   {
     // Test to see if leaving a room removes 1 client from it
     var roomId = Guid.NewGuid();
@@ -75,8 +75,8 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client1);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client2);
     var room = RoomHandler.FindRoomByRoomID(roomId);
 
     // TODO: Remove client from room as of now there are 2 clients in this room
@@ -86,7 +86,7 @@ public class RoomHandlerTester
     Assert.Single(room.Clients); 
   }
   [Fact]
-  public void LeaveRoomDeleteRoomTest()
+  public async Task LeaveRoomDeleteRoomTest()
   {
     // If last leaving a room does it delete it
     var roomId = Guid.NewGuid();
@@ -97,7 +97,7 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client);
 
     RoomHandler.LeaveRoom(client);
     var room = RoomHandler.FindRoomByRoomID(roomId);
@@ -105,7 +105,7 @@ public class RoomHandlerTester
     Assert.Null(room); 
   }
   [Fact]
-  public void LeaveRoomNoClientTest()
+  public async Task LeaveRoomNoClientTest()
   {
     // If calling leave room with a client that doesn't exist dont break the code
     var roomId = Guid.NewGuid();
@@ -125,7 +125,7 @@ public class RoomHandlerTester
 
     // TODO: Finish this, currently code creates an unused client makes another
       // leave a room that isnt in one then checks if a room exists and returns if the room exists but the room was never made
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client);
     RoomHandler.LeaveRoom(nonClient);
     var room = RoomHandler.FindRoomByRoomID(roomId);
 
@@ -151,8 +151,8 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client1);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client2);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
     Assert.NotNull(room); 
@@ -181,7 +181,7 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
     Assert.NotNull(room); 
@@ -211,7 +211,7 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client);
 
     var nonClient = new ClientInfo
     {
@@ -235,7 +235,7 @@ public class RoomHandlerTester
     Assert.Equal(board_before, board_after); 
   }
   [Fact]
-  public void CreateDuplicateRoomTest()
+  public async Task CreateDuplicateRoomTest()
   {
     // If creating a room that already exists does it handle this
     var roomId = Guid.NewGuid();
@@ -253,8 +253,8 @@ public class RoomHandlerTester
       Socket = new ClientWebSocket()
     };
 
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client1);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client2);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
     Assert.NotNull(room);
@@ -285,8 +285,8 @@ public class RoomHandlerTester
     // At the moment this is trying to create/join a room then do it again
     // Look into multithreading in c# to run each on a different thread and look into running at around same time to simulate this
     // Should end the join/create multithread and afterwards check to see if it was handled or if it happened differently/caused errors
-    var t1 = Task.Run(() => RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client1));
-    var t2 = Task.Run(() => RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", client2));
+    var t1 = Task.Run(() => RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client1));
+    var t2 = Task.Run(() => RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", client2));
     await Task.WhenAll(t1, t2);
 
     var room = RoomHandler.FindRoomByRoomID(roomId);
@@ -294,39 +294,32 @@ public class RoomHandlerTester
     Assert.Equal(2, room.Clients.Count);
   }
   [Fact]
-  public void QuickPlayTest()
+  public async Task QuickPlayTestAsync()
   {
     // Test adding a client to a room and then having another join through quickplay
     var roomId = Guid.NewGuid();
     var p1 = NewClient(roomId);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p1);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", p1);
 
     var p2 = NewClient(Guid.Empty);
-    var (joined, returnedRoomId, gameKey) = RoomHandler.QuickPlay(p2);
+    var (found, returnedRoomId, gameKey) = RoomHandler.QuickPlay();
 
-    Assert.True(joined);
+    Assert.True(found);
     Assert.Equal(roomId, returnedRoomId);
     Assert.Equal("tictactoe", gameKey);
   }
   [Fact]
-  public void QuickPlayRoomsFullTest()
+  public async Task QuickPlayRoomsFullTest()
   {
     // Test adding a client to a room when rooms are full
     var roomId = Guid.NewGuid();
     var p1 = NewClient(roomId);
     var p2 = NewClient(roomId);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p1);
-    RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", p2);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", p1);
+    await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", p2);
 
-    var p3 = NewClient(Guid.Empty);
-    var (joined, _, _) = RoomHandler.QuickPlay(p3);
-    Assert.False(joined);
-  }
-  [Fact]
-  public void QuickPlayMalformedClientTest()
-  {
-    // Test adding a malformed client to a room via quickplay
-    Assert.Throws<NullReferenceException>(() => RoomHandler.QuickPlay(null!));
+    var (found, _, _) = RoomHandler.QuickPlay();
+    Assert.False(found);
   }
 
   // Helper methods
@@ -337,14 +330,14 @@ public class RoomHandlerTester
       Socket   = new ClientWebSocket()
   };
 
-  private static (Room room, ClientInfo c1, ClientInfo c2) SetupTwoPlayerRoom()
+  private static async Task<(Room room, ClientInfo c1, ClientInfo c2)> SetupTwoPlayerRoom()
   {
       var roomId = Guid.NewGuid();
       var c1 = NewClient(roomId);
       var c2 = NewClient(roomId);
 
-      RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", c1);
-      RoomHandler.JoinOrCreateRoom(roomId, "tictactoe", c2);
+      await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", c1);
+      await RoomHandler.JoinOrCreateRoomAsync(roomId, "tictactoe", c2);
 
       var room = RoomHandler.FindRoomByRoomID(roomId)!;
       return (room, c1, c2);

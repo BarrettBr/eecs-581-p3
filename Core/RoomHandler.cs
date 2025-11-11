@@ -94,6 +94,18 @@ namespace SocketHandler.Core
       // Quick helper function that takes in a RoomID and returns the room that corresponds to it
       return rooms.GetValueOrDefault(roomID);
     }
+    public static string? ParseEvent(string state)
+    {
+      try
+      {
+          var msg = Newtonsoft.Json.Linq.JObject.Parse(state);
+          return (string?)msg["Event"];
+      }
+      catch
+      {
+          return null;
+      }
+    }
     public static async Task HandleStateAsync(ClientInfo client, string state)
     {
       // Description: Takes a state from the frontend and pass to the GameHandler to handle/deal with
@@ -108,14 +120,49 @@ namespace SocketHandler.Core
       try
       {
         // Added lock to prevent 2 users from playing at the same time
-        bool changed;
-        lock (room.RoomLock)
+        var event_state = ParseEvent(state)?.ToLowerInvariant();
+        switch (event_state)
         {
-          changed = room.Game.Play(state, client);
-        }
-        if (changed)
-        {
-          await BroadcastView(room.Game.View, room);
+          case "move":
+            // Currently used in turn-based games as a "move, broadcast, wait, move" turn
+            bool changed;
+            lock (room.RoomLock)
+            {
+              changed = room.Game.Play(state, client);
+            }
+            if (changed)
+            {
+              await BroadcastView(room.Game.View, room);
+            }
+            return;
+          case "room.lock":
+            // Event hit upon trying to lock the room, used to prvent quickplay joins
+            if (!room.Game.Players.TryGetValue(client.ClientID, out var idx) || idx != 0)
+            {
+              return;
+            }
+            try
+            {
+              var msg = Newtonsoft.Json.Linq.JObject.Parse(state);
+              var locked = (bool?)msg["locked"];
+              if (locked != null)
+              {
+                room.QuickPlayLocked = locked.Value;
+              }
+            } catch {}
+            return;
+          default:
+            // Default case that is hit upon not having an event defined (Null events go here)
+            bool ChangedDefault;
+            lock (room.RoomLock)
+            {
+              ChangedDefault = room.Game.Play(state, client);
+            }
+            if (ChangedDefault)
+            {
+              await BroadcastView(room.Game.View, room);
+            }
+            return;
         }
       }
       catch (Exception e)
@@ -170,52 +217,29 @@ namespace SocketHandler.Core
       public required State State { get; set; }
     }
 
-    public static void JoinOrCreateRoom(Guid roomID, string gameKey, ClientInfo client)
+    public static async Task JoinOrCreateRoomAsync(Guid roomID, string gameKey, ClientInfo client)
     {
       // Inputs: Id of the room, the string for the GameFactory to return a new GameHandler, and finally the clientInfo object themselves for use with adding them to the room
       // Outputs: Just does an action of creating/adding them to the room or just adding them to the one that exists
       var room = rooms.GetOrAdd(roomID, new Room { RoomID = roomID, Game = GameFactory.CreateGame(gameKey) });
       room.Clients[client.ClientID] = client;
+      
+      room.Game.Join(client);
 
       // Send board to client
-      _ = SendBoardToClient(room.Game.View, client, room);
-      room.Game.Join(client);
+      await SendBoardToClient(room.Game.View, client, room);
     }
 
-    private static bool TryJoinRoom(Room room, ClientInfo client, out string gameKey)
-    {
-      // Helper function that tries to join a singular room with a lock returns bool based on if joined
-      gameKey = string.Empty;
-      lock (room.RoomLock)
-      {
-        if (!room.IsOpen) return false;
-        if (!room.Clients.TryAdd(client.ClientID, client)) return false;
-
-        client.RoomID = room.RoomID;
-        room.Game.Join(client);
-        _ = SendBoardToClient(room.Game.View, client, room);
-
-        gameKey = room.Game.GameKey;
-        return true;
-      }
-    }
-
-    public static (bool joinedExisting, Guid roomId, string gameKey) QuickPlay(ClientInfo client)
+    public static (bool found, Guid roomId, string gameKey) QuickPlay()
     {
       var snapshot = rooms.Values.ToArray().ToList();
-
       foreach (var room in snapshot)
       {
-        if (!room.IsOpen) continue;
-
-        // If room free return we joined it the id of it and the gamekey
-        // Used out on gamekey since if we fall into default case or something weird we can update it to what actually happens
-        if (TryJoinRoom(room, client, out var gameKey))
+        if (!room.QuickPlayLocked && room.IsOpen)
         {
-          return (true, room.RoomID, gameKey);
+          return (true, room.RoomID, room.Game.GameKey);
         }
       }
-
       // No Free Rooms
       return (false, Guid.Empty, string.Empty);
     }
@@ -246,6 +270,7 @@ namespace SocketHandler.Core
     public required GameHandler Game { get; init; }
     public object RoomLock { get; } = new();
     public ConcurrentDictionary<Guid, ClientInfo> Clients { get; } = new();
-    public bool IsOpen => Clients.Count < Game.MaxPlayers && Game.state == State.Playing;
+    public bool QuickPlayLocked = false;
+    public bool IsOpen => Game.Players.Count < Game.MaxPlayers && Game.state == State.Playing;
   }
 }
