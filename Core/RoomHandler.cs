@@ -98,12 +98,12 @@ namespace SocketHandler.Core
     {
       try
       {
-          var msg = Newtonsoft.Json.Linq.JObject.Parse(state);
-          return (string?)msg["Event"];
+        var msg = Newtonsoft.Json.Linq.JObject.Parse(state);
+        return (string?)msg["Event"];
       }
       catch
       {
-          return null;
+        return null;
       }
     }
     public static async Task HandleStateAsync(ClientInfo client, string state)
@@ -133,6 +133,10 @@ namespace SocketHandler.Core
             if (changed)
             {
               await BroadcastView(room, "view", client);
+              // Put if inside to handle accidentally doing more than 1 win per game
+              if (room.Game.state == State.Win){
+                await DatabaseHandler.UpdateWin(client);
+              }
             }
             return;
           case "room.lock":
@@ -168,6 +172,7 @@ namespace SocketHandler.Core
             return;
           default:
             // Default case that is hit upon not having an event defined (Null events go here)
+            // Currently a copy of the "move" state might want to change this but for now we handle both the same
             bool ChangedDefault;
             lock (room.RoomLock)
             {
@@ -176,6 +181,9 @@ namespace SocketHandler.Core
             if (ChangedDefault)
             {
               await BroadcastView(room, "view", client);
+              if (room.Game.state == State.Win){
+                await DatabaseHandler.UpdateWin(client);
+              }
             }
             return;
         }
