@@ -278,12 +278,6 @@ namespace Game.Core
 		//    Updates the internal win count and exposes it through the View property. 
 		//    The server acts as the single source of truth for game state and selections
 		//
-		private class Event 
-		{
-			public string EventType { get; set; } 
-			public Move selected_move { get; set; }
-		}
-
 		public int p1_wins;
 		public int p2_wins;
 		private enum Move { Rock, Paper, Scissor, Unset };
@@ -314,7 +308,6 @@ namespace Game.Core
 			p2_move = Move.Unset;
 		}
 
-
 		public override bool Play(string state, ClientInfo client)
 		{
 			// Description:
@@ -326,34 +319,33 @@ namespace Game.Core
 			//    The client themselves
 			// Outputs:
 			//    Updates the board and returns true if a valid move was made.
-			Event myEvent;
-			try
-			{
-				myEvent = JsonSerializer.Deserialize<Event>(state);
-				if (myEvent == null)	
-				{
-					Console.WriteLine("JSON deserialized to null"); 
-					return false;
-				}
-			}
-			catch (JsonException ex)
-			{
-				Console.WriteLine($"Invalid JSON: {ex.Message}");
-				return false;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Unexpected error: {ex.Message}");
-				return false;
-			}
+      
+      // As state is deserialized on the roomhandler side I changed your event from eventtype -> event to match expected on js side
+      // and make that happen then just kept similar to ttt's play parsing with your try so as not to have to deserialize each time but parse
+      int selected_move;
+      try
+      {
+        using var doc = JsonDocument.Parse(state);
+        selected_move = doc.RootElement.GetProperty("selected_move").GetInt32();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Unexpected error: {ex.Message}");
+        return false;
+      }
 
+      // Just wrote a quick safety check to ensure type conversion will work
+      if (selected_move < 0 || selected_move > 2){
+        return false;
+      }
+      Move move = (Move)selected_move;
 
 			if(Players[client.ClientID] == 0){
 				// update p1 move accordingly
-				p1_move = myEvent.selected_move;
+				p1_move = move;
 			} else if(Players[client.ClientID] == 1){
 				// update p2 move accordingly
-				p2_move = myEvent.selected_move;
+				p2_move = move;
 			} else {
 				return false;
 			}
