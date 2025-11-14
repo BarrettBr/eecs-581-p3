@@ -16,12 +16,13 @@
 			</canvas>
 
 			<div class="grid" style="max-width:30vw; margin: 0 auto;">
-				<button onclick="input(rock)"> Rock </button>
-				<button onclick="input(paper)"> Paper </button>
-				<button onclick="input(scissors)"> Scissors </button>
+				<button data-choice="rock"> Rock </button>
+				<button data-choice="paper"> Paper </button>
+				<button data-choice="scissors"> Scissors </button>
 			</div>
 		</main>
 		<script src="/js/config.js"></script> 
-		<script src="/js/rps.js"></script> 
+		<script type="module" src="/js/wsHelper.js"></script>
+		<script type="module" src="/js/rps.js"></script> 
 	</body>
 </html>

@@ -259,4 +259,145 @@ namespace Game.Core
 			}
 		}
 	}
+
+
+	public class RockPaperScissors : GameHandler
+	{
+		// Description:
+		//  Defines the Rock Paper Scissor game logic that inherits from GameHandler.
+		//
+		// Inputs:
+		//    The Play() method receives a JSON string from the frontend describing a move.
+		//    Example: { "event": "selection", "symbol": "rock" }.
+		//
+		// Outputs:
+		//    Updates the internal win count and exposes it through the View property. 
+		//    The server acts as the single source of truth for game state and selections
+		//
+		private class Event 
+		{
+			public string EventType { get; set; } 
+			public Move selected_move { get; set; }
+		}
+
+		public int p1_wins;
+		public int p2_wins;
+		private enum Move { Rock, Paper, Scissor, Unset };
+		private Move p1_move;
+		private Move p2_move;
+		private int amt_to_win = 3;
+		public override int MaxPlayers => 2; // Used as "Max PLayers playing" not spectators, allows for easy checking against index in Players dictionary and quick play open room checking
+
+		public override string GameKey => "rockpaperscissors"; 
+		private State _state = State.Playing; // et the inital state to "playing" to signify a match has started
+		public override State state => _state; // Allow other outside classes to get the state at any time while not updating it as updating will only happen within this class
+		public override ConcurrentDictionary<Guid, int> Players { get; set; } = new ConcurrentDictionary<Guid, int>(); // Used to store a dictionary of players + indexes of join order.
+
+		public override object View => new 
+		{
+			Player1Wins = p1_wins,
+			Player2Wins = p2_wins,
+			Player1Move = p1_move,
+			Player2Move = p2_move,
+			Status = _state.ToString(),
+			WinAmt = amt_to_win 
+		};
+
+		public RockPaperScissors(){
+			p1_wins = 0;
+			p2_wins = 0;
+			p1_move = Move.Unset;
+			p2_move = Move.Unset;
+		}
+
+
+		public override bool Play(string state, ClientInfo client)
+		{
+			// Description:
+			//  Handles a player's move. Verifies that the move is valid (e.g., within bounds,
+			//  correct turn, and not overwriting an existing cell), then applies it to the board.
+			//
+			// Inputs:
+			//    JSON string from the frontend representing the move.
+			//    The client themselves
+			// Outputs:
+			//    Updates the board and returns true if a valid move was made.
+			Console.WriteLine(state);
+			Event myEvent;
+			try
+			{
+				myEvent = JsonSerializer.Deserialize<Event>(state);
+				if (myEvent == null)	
+				{
+					Console.WriteLine("JSON deserialized to null"); 
+					return false;
+				}
+			}
+			catch (JsonException ex)
+			{
+				Console.WriteLine($"Invalid JSON: {ex.Message}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Unexpected error: {ex.Message}");
+				return false;
+			}
+
+
+			if(Players[client.ClientID] == 0){
+				// update p1 move accordingly
+				p1_move = myEvent.selected_move;
+			} else if(Players[client.ClientID] == 1){
+				// update p2 move accordingly
+				p1_move = myEvent.selected_move;
+			} else {
+				return false;
+			}
+
+			WinDetection(); 
+			return true; // If nothing stopped it/the play was made we return true since we did a move
+		}
+
+		private void WinDetection()
+		{
+			// Description:
+			//  Checks the board for win or draw conditions and updates _state accordingly.
+			//
+			// Inputs: p1_wins and p2_wins
+			// Outputs: _state may be updated 
+			//
+			// TODO: Implement win/draw detection logic.
+			if(p1_wins == amt_to_win){
+				_state = State.Win;
+			} else if (p2_wins == amt_to_win){
+				_state = State.Win;
+			}
+		}
+
+		public override void Join(ClientInfo client)
+		{
+			// Descrition:
+			//  Will be called when a user joins this room use this to make a "Player 1, 2,..."
+			//  and internal spectators so as to only allow certain players to play a move
+			// 
+			// Inputs: The client themselves
+			// Ouputs: None - Updates internal "players" variable
+			// 
+			if (Players.ContainsKey(client.ClientID)) { return; }
+
+			if (Players.Count < MaxPlayers)
+			{
+				Players.TryAdd(client.ClientID, Players.Count);
+				Console.WriteLine($"Player joined: {client.ClientID} as player {Players.Count}"); 
+				return; 
+			}
+
+			if (Players.Count >= MaxPlayers)
+			{
+				// Optional: Track spectators separately if needed
+				return;
+			}
+		}
+	}
 }
