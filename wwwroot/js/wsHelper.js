@@ -95,11 +95,23 @@ function getParam(name) {
     return new URLSearchParams(location.search).get(name);
 }
 
+function generateUUIDv4() {
+    // Based on https://www.usefulids.com/resources/generate-uuid-in-typescript
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        }
+    );
+}
+
 function FindOrCreateRoomID() {
     let id = getParam("roomID");
     // If it doesn't exist/not a GUID create a new one and send it back
     if (!GuidValidate(id)) {
-        id = crypto.randomUUID();
+        id = generateUUIDv4();
         setParam("roomID", id);
     }
     return id;
