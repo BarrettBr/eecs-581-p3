@@ -22,7 +22,7 @@ namespace SocketHandler.Core
         }
       }
     }
-    public static async Task UpdateWin(ClientInfo client)
+    public async Task UpdateWin(ClientInfo client)
     {
       // Lookup client in database -> increment win number -> make sure this displays somewhere on site
       // Maybe update clientInfo to include a "display name" if needed otherwise include a pseudorandom name for them

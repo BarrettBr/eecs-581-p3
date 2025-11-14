@@ -135,7 +135,7 @@ namespace SocketHandler.Core
               await BroadcastView(room, "view", client);
               // Put if inside to handle accidentally doing more than 1 win per game
               if (room.Game.state == State.Win){
-                await DatabaseHandler.UpdateWin(client);
+                await DatabaseHandler.Instance.UpdateWin(client);
               }
             }
             return;
@@ -182,7 +182,7 @@ namespace SocketHandler.Core
             {
               await BroadcastView(room, "view", client);
               if (room.Game.state == State.Win){
-                await DatabaseHandler.UpdateWin(client);
+                await DatabaseHandler.Instance.UpdateWin(client);
               }
             }
             return;
@@ -251,7 +251,8 @@ namespace SocketHandler.Core
     public static async Task SendBoardToClient(object view, ClientInfo client, Room room)
     {
       // TODO: Actually test function & ensure it is properly sent/recieved by clients on frontend
-      BoardData dataToSend = new BoardData { Event = "view", Value = view, State = room.Game.state}; // Convert board to update object
+      room.Game.Players.TryGetValue(client.ClientID, out int player_index);
+      BoardData dataToSend = new BoardData { Event = "view", Value = view, State = room.Game.state, Player_Index = player_index}; // Convert board to update object
       string jsonString = JsonConvert.SerializeObject(dataToSend, Formatting.Indented); // Convert update to JSON object
       var buffer = System.Text.Encoding.UTF8.GetBytes(jsonString); // Convert JSON to byte buffer
       try
@@ -269,6 +270,7 @@ namespace SocketHandler.Core
       public required string Event { get; set; }
       public required object Value { get; set; }
       public required State State { get; set; }
+      public int Player_Index { get; set; }
     }
 
     public static async Task JoinOrCreateRoomAsync(Guid roomID, string gameKey, ClientInfo client)

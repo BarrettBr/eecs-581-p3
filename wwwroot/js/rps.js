@@ -38,6 +38,8 @@ var p1_choice = none;
 var p2_choice = none;
 
 var win_amt = 3;
+let cur_state;
+let player_index = null;
 
 // These variables represent the screen state and are kept up to date by windowResized
 var canvas_width = canvas.width;
@@ -124,21 +126,41 @@ function draw() {
     let hsize = 0;
 
     console.log(p1_choice);
-    if (p1_choice == rock) {
-        vsize = size * 1.499;
-        hsize = size;
-        base_image.src = "/images/stone.png";
-    } else if (p1_choice == paper) {
-        vsize = size;
-        hsize = size * 1.705;
-        base_image.src = "/images/paper.png";
-    } else if (p1_choice == scissors) {
-        vsize = size * 1.3;
-        hsize = size * 1.3;
-        base_image.src = "/images/scissors.png";
-    } else {
-        // for now this isn't defined but we could add a placeholder
-        return;
+    if (player_index === 0 && p1_choice !== none) {
+        if (p1_choice == rock) {
+            vsize = size * 1.499;
+            hsize = size;
+            base_image.src = "/images/stone.png";
+        } else if (p1_choice == paper) {
+            vsize = size;
+            hsize = size * 1.705;
+            base_image.src = "/images/paper.png";
+        } else if (p1_choice == scissors) {
+            vsize = size * 1.3;
+            hsize = size * 1.3;
+            base_image.src = "/images/scissors.png";
+        } else {
+            // for now this isn't defined but we could add a placeholder
+            return;
+        }
+    } else if (player_index === 1 && p2_choice !== none) {
+        // Currently just copy pasted code from p1 over and changed choice var but needs to be updated to show on right
+        if (p2_choice == rock) {
+            vsize = size * 1.499;
+            hsize = size;
+            base_image.src = "/images/stone.png";
+        } else if (p2_choice == paper) {
+            vsize = size;
+            hsize = size * 1.705;
+            base_image.src = "/images/paper.png";
+        } else if (p2_choice == scissors) {
+            vsize = size * 1.3;
+            hsize = size * 1.3;
+            base_image.src = "/images/scissors.png";
+        } else {
+            // for now this isn't defined but we could add a placeholder
+            return;
+        }
     }
     base_image.onload = function () {
         ctx.drawImage(base_image, hpad - 20, vpad * 3, size, size);
@@ -167,14 +189,24 @@ function initFunction() {
         // { event: "view", board: 2D array}
         // Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
         try {
-            console.log(msg);
-            const value = msg.Value;
-            p1_wins = Number(value.Player1Wins);
-            p2_wins = Number(value.Player2Wins);
-            p1_choice = Number(value.Player1Move);
-            p2_choice = Number(value.Player2Move);
-            win_amt = Number(value.WinAmt);
-            draw();
+            if (typeof msg.Player_Index === "number") {
+                player_index = msg.Player_Index;
+                console.log("Update player index to: ", player_index);
+            }
+            if (msg?.Event === "view") {
+                const StateText = ["Playing", "Win", "Draw"];
+                cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
+                console.log(msg);
+
+                const value = msg.Value;
+                p1_wins = Number(value.Player1Wins);
+                p2_wins = Number(value.Player2Wins);
+                p1_choice = Number(value.Player1Move);
+                p2_choice = Number(value.Player2Move);
+                win_amt = Number(value.WinAmt);
+
+                draw();
+            }
         } catch (e) {
             console.warn("Bad WS sent from Server -> client", e, msg);
         }
