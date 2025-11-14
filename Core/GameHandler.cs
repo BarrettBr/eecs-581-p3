@@ -83,6 +83,7 @@ namespace Game.Core
 			return gameKey.ToLowerInvariant() switch
 			{
 				"tictactoe" => new TicTacToe(),
+				"rockpaperscissors" => new RockPaperScissors(),
 				_ => new TicTacToe(),// TODO: Set to break + handling; Currently set default to TicTacToe but can change to break + handle for later just set it for testing reasons
 			};
 		}
@@ -261,6 +262,9 @@ namespace Game.Core
 	}
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+
 	public class RockPaperScissors : GameHandler
 	{
 		// Description:
@@ -322,7 +326,6 @@ namespace Game.Core
 			//    The client themselves
 			// Outputs:
 			//    Updates the board and returns true if a valid move was made.
-			Console.WriteLine(state);
 			Event myEvent;
 			try
 			{
@@ -350,11 +353,40 @@ namespace Game.Core
 				p1_move = myEvent.selected_move;
 			} else if(Players[client.ClientID] == 1){
 				// update p2 move accordingly
-				p1_move = myEvent.selected_move;
+				p2_move = myEvent.selected_move;
 			} else {
 				return false;
 			}
 
+			// If both players made their move then check who won this round
+			if(p1_move != Move.Unset && p2_move != Move.Unset){
+				// This case is a tie
+				if(p1_move == p2_move){
+					// do nothing
+				}
+				// Cases where P1 wins
+				else if(p1_move == Move.Rock && p2_move == Move.Scissor){
+					p1_wins++;
+				} else if(p1_move == Move.Paper && p2_move == Move.Rock){
+					p1_wins++;
+				} else if(p1_move == Move.Scissor && p2_move == Move.Paper){
+					p1_wins++;
+				}
+				// Cases where P2 wins
+				else if(p2_move == Move.Rock && p1_move == Move.Scissor){
+					p2_wins++;
+				} else if(p2_move == Move.Paper && p1_move == Move.Rock){
+					p2_wins++;
+				} else if(p2_move == Move.Scissor && p1_move == Move.Paper){
+					p2_wins++;
+				}
+				Console.WriteLine($"P1 wins: {p1_wins}, P2 wins: {p2_wins}");
+
+				p1_move = Move.Unset;
+				p2_move = Move.Unset;
+			}
+
+			// Check if a player has enough wins for the game to end
 			WinDetection(); 
 			return true; // If nothing stopped it/the play was made we return true since we did a move
 		}
@@ -370,8 +402,10 @@ namespace Game.Core
 			// TODO: Implement win/draw detection logic.
 			if(p1_wins == amt_to_win){
 				_state = State.Win;
+				Console.WriteLine("P1 Wins!");
 			} else if (p2_wins == amt_to_win){
 				_state = State.Win;
+				Console.WriteLine("P2 Wins!");
 			}
 		}
 
