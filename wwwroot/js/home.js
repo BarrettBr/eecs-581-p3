@@ -25,3 +25,15 @@ document.getElementById("quick-play").addEventListener("click", () => {
 
     socket.onclose = () => console.log("Quick play socket closed");
 });
+
+document.getElementById("set-alias-btn").addEventListener("click", () => {
+    const aliasInput = document.getElementById("alias-input");
+    const alias = aliasInput.value.trim();
+    if (alias.length === 0) {
+        alert("Alias cannot be empty.");
+        return;
+    }
+    window.CONFIG.player_alias = alias;
+    console.log(`Alias set to: ${alias}`);
+    aliasInput.value = "";
+});

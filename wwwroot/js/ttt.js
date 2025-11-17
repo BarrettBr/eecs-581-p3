@@ -31,7 +31,7 @@ Functions / Components:
 
 - clickHandler(event):
     Computes which cell was clicked based on pixel coordinates then sends a move request
-    to the backend via 'send(socket, { Event: "move", Row, Col })'. We might want to change the event later all depends on the expected values
+    to the backend via 'send(socket, { Event: "move", Row, Col, Alias })'. We might want to change the event later all depends on the expected values
 
 - windowResized():
     Updates cached canvas width/height and recalculates cell size when the browser resizes.
@@ -115,7 +115,12 @@ function clickHandler(event) {
 
     // This "send" is how we send to the backend Idk what alt does so I left it for sake of not screwing you up later
     // However this is formed gamehandler will recieve/deal with so knowing the form here/backend is important
-    send(socket, { Event: "move", Row: clicked_row, Col: clicked_col });
+    send(socket, {
+        Event: "move",
+        Row: clicked_row,
+        Col: clicked_col,
+        Alias: window.CONFIG.player_alias,
+    });
     alt = !alt;
 }
 let isLocked = false;

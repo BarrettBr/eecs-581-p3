@@ -33,4 +33,5 @@ const protocol = location.protocol === "https:" ? "wss" : "ws"; // Changed it to
 const host = location.host;
 window.CONFIG = {
     socket_url: `${protocol}://${host}/ws`,
+    player_alias: null,
 };

@@ -22,11 +22,12 @@ namespace SocketHandler.Core
         }
       }
     }
-    public async Task UpdateWin(ClientInfo client)
+    public async Task UpdateWin(Room room, string alias)
     {
       // Lookup client in database -> increment win number -> make sure this displays somewhere on site
-      // Maybe update clientInfo to include a "display name" if needed otherwise include a pseudorandom name for them
-      // Since every game has its own short-lived ws socket if user 1 wins ttt goes to rps those count as 2 wins so handle this
+      // Sent room to identify game type since different games may have different database tables, also sent alias since
+      // the player sets an alias when they start the game that is sent along with the win state to track them
+      await Task.CompletedTask; // Placeholder to make this async
     }
   }
 }
