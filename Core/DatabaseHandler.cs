@@ -89,7 +89,6 @@ namespace SocketHandler.Core
       command.CommandText = $"SELECT Alias, Wins FROM {tableName}";
 
       var result = await command.ExecuteReaderAsync();
-      connection.Close();
 
       // Return a dictionary of alias and wins
       var winsDict = new Dictionary<string, int>();
@@ -99,6 +98,7 @@ namespace SocketHandler.Core
         int wins = result.GetInt32(1);
         winsDict[alias] = wins; 
       }
+      connection.Close();
       return winsDict;
     }
   }

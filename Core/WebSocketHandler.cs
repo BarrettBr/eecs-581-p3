@@ -94,7 +94,7 @@ namespace SocketHandler.Core
           // No rooms Free send to frontend for reactive response
           var payload = System.Text.Json.JsonSerializer.Serialize(new
           {
-            Event = "nofree"
+            Event = "nofreerooms"
           });
           var buffer = System.Text.Encoding.UTF8.GetBytes(payload);
           await socket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);

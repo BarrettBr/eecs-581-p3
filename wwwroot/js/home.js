@@ -15,7 +15,7 @@ document.getElementById("quick-play").addEventListener("click", () => {
             location.href = `/html/${game}.html?roomID=${encodeURIComponent(
                 roomID
             )}`;
-        } else if (msg.Event === "nofree") {
+        } else if (msg.Event === "nofreerooms") {
             alert("No open rooms right now"); // Could change this later just chose the basic popup for now
             socket.close();
         } else if (msg.Event === "error") {

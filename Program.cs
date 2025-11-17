@@ -66,6 +66,14 @@ class Program
         await next(context);
       }
     });
+
+    // Leaderboard endpoint only have one so no need for a controller here
+    app.MapGet("/api/leaderboard/{gameKey}", async (string gameKey) => {
+      var dbHandler = DatabaseHandler.Instance;
+      var wins = await dbHandler.GetWins(gameKey);
+      return Results.Ok(wins);
+    });
+
     app.Run();
   }
 }
