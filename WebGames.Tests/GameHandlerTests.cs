@@ -5,6 +5,60 @@ using System.Net.WebSockets;
 using System.Text.Json;
 using Xunit;
 
+/*
+Prologue
+
+Authors: Barrett Brown, Johnathon Gott
+Creation Date: 11/08/2025
+
+Description:
+- Contains a comprehensive collection of unit tests for all core GameHandler and TicTacToe game logic.
+- Built using xUnit to ensure correctness, stability, and predictable behavior across a wide range of inputs.
+- Covers factory behavior, player join ordering, move validation, turn handling, spectator logic, and end-game conditions.
+- Includes tests validating JSON parsing, malformed requests, out of bounds checks, and incorrect turn attempts.
+- Ensures that the TicTacToe implementation follows the contract defined by the abstract GameHandler class.
+
+Functions / Classes:
+- class GameHandlerTester:
+    - FactoryTest / FactoryCaseTest / FactoryUnknownTest:
+        Validates that the GameFactory constructs the correct concrete game regardless of case or unknown input.
+    - InitialStateTest:
+        Ensures the starting board and game state are initialized correctly.
+    - JoinTest / JoinOrderTest / RejoinTest:
+        Ensures player registration, ordering, and rejoining are handled consistently.
+    - PlayTest:
+        Confirms that valid moves update the board and maintain State.Playing.
+    - NullStatePlayTest / MalformedPlayRequestTest / StateTypeTest:
+        Tests error handling for invalid JSON, missing keys, and incorrect types.
+    - OutOfBoundsPlayTest / OccupiedTest:
+        Ensures illegal moves do not update the board.
+    - WrongTurnPlayTest / SpectatorPlayTest:
+        Confirms turn enforcement and disallows spectators from modifying board state.
+    - PlayAfterEndTest:
+        Ensures no further moves can be made after a win or draw.
+    - WinDetectionTest / DrawDetectionTest:
+        Verifies correct state transitions for terminal game outcomes.
+    - ColumnWinTest / RowWinTest / DiagonalWinTest:
+        Validates the three primary win scenarios.
+    - PlayerIDTest:
+        Confirms that player identifiers are stored correctly by the underlying GameHandler.
+
+Inputs:
+- JSON move strings sent to the Play method.
+- ClientInfo objects representing players and spectators.
+- GameFactory-created game instances.
+
+Outputs:
+- Assertions validating:
+    - board updates,
+    - turn order correctness,
+    - state transitions,
+    - correct handling of malformed move requests,
+    - proper game termination rules.
+
+*/
+
+
 // This is made using xUnit for more information please check the "Testing" section in the README.md.
 // Also the "Resources" section has links to easy to digest articles and documentation pages
 // Created a bunch of "starter tests" can create more later if needing to test turn variables and what not to ensure they are properly updated upon a turn or no turn

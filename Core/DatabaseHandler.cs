@@ -2,6 +2,40 @@ using System.ComponentModel;
 using System.Data.SQLite;
 using Game.Core;
 
+/*
+Prologue
+
+Authors: Barrett Brown
+Creation Date: 11/20/2025
+
+Description:
+- Implements a singleton-style database manager ('DatabaseHandler') responsible for all interactions with the SQLite backend.
+- Designed to support multiple games by mapping each gameKey to its corresponding player statistics table.
+- Provides methods to update and retrieve win counts for players across different game types.
+- Ensures thread-safe access to the SQLite database through a locked singleton instance, preventing multiple conflicting connections.
+- Used by the Room/Game system to persist player performance and support future leaderboard features.
+
+Functions / Classes:
+- sealed class DatabaseHandler:
+    - Instance: Provides global, thread-safe access to the single DatabaseHandler instance.
+    - tableNameFinder(gameKey: string): Maps an internal game identifier to its corresponding database table.
+    - UpdateWin(room: Room, alias: string): Increments a player's win count or inserts a new record if the player does not yet exist.
+    - GetWinsForUser(gameKey: string, alias: string): Returns the total wins for the specified player in the specified game.
+    - GetWins(gameKey: string): Returns all aliases and win totals for the given game in a dictionary.
+
+Inputs:
+- gameKey strings identifying the game mode (e.g., "tictactoe").
+- alias strings chosen by players when joining a room.
+- Room objects used to determine the correct table based on the game type.
+
+Outputs:
+- Updated SQLite tables storing user win statistics.
+- Integer win counts for individual players.
+- Dictionaries mapping player aliases to their win totals.
+
+*/
+
+
 namespace SocketHandler.Core
 {
   public sealed class DatabaseHandler
