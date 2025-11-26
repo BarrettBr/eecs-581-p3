@@ -319,26 +319,26 @@ namespace Game.Core
 			//    The client themselves
 			// Outputs:
 			//    Updates the board and returns true if a valid move was made.
-      
-      // As state is deserialized on the roomhandler side I changed your event from eventtype -> event to match expected on js side
-      // and make that happen then just kept similar to ttt's play parsing with your try so as not to have to deserialize each time but parse
-      int selected_move;
-      try
-      {
-        using var doc = JsonDocument.Parse(state);
-        selected_move = doc.RootElement.GetProperty("selected_move").GetInt32();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"Unexpected error: {ex.Message}");
-        return false;
-      }
 
-      // Just wrote a quick safety check to ensure type conversion will work
-      if (selected_move < 0 || selected_move > 2){
-        return false;
-      }
-      Move move = (Move)selected_move;
+			// As state is deserialized on the roomhandler side I changed your event from eventtype -> event to match expected on js side
+			// and make that happen then just kept similar to ttt's play parsing with your try so as not to have to deserialize each time but parse
+			int selected_move;
+			try
+			{
+				using var doc = JsonDocument.Parse(state);
+				selected_move = doc.RootElement.GetProperty("selected_move").GetInt32();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Unexpected error: {ex.Message}");
+				return false;
+			}
+
+			// Just wrote a quick safety check to ensure type conversion will work
+			if (selected_move < 0 || selected_move > 2){
+				return false;
+			}
+			Move move = (Move)selected_move;
 
 			if(Players[client.ClientID] == 0){
 				// update p1 move accordingly
@@ -350,6 +350,16 @@ namespace Game.Core
 				return false;
 			}
 
+			// if both players have made their move check who won that round
+			RoundWinDetection();
+
+
+			// Check if a player has enough wins for the game to end
+			GameWinDetection(); 
+			return true; // If nothing stopped it/the play was made we return true since we did a move
+		}
+
+		private void RoundWinDetection(){
 			// If both players made their move then check who won this round
 			if(p1_move != Move.Unset && p2_move != Move.Unset){
 				// This case is a tie
@@ -378,12 +388,9 @@ namespace Game.Core
 				p2_move = Move.Unset;
 			}
 
-			// Check if a player has enough wins for the game to end
-			WinDetection(); 
-			return true; // If nothing stopped it/the play was made we return true since we did a move
 		}
 
-		private void WinDetection()
+		private void GameWinDetection()
 		{
 			// Description:
 			//  Checks the board for win or draw conditions and updates _state accordingly.
