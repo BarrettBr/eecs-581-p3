@@ -88,6 +88,28 @@ function input(action) {
     draw();
 }
 
+function win_check(){
+	if(p1_wins == win_amt){
+		if(player_index == 0){
+			window.alert("You Won :D");
+		} else if (player_index == 1){
+			window.alert("You Lost :(");
+		} else {
+			window.alert("Player 1 Wins!")
+		}
+	}
+	if(p2_wins == win_amt){
+		if(player_index == 1){
+			window.alert("You Lost :(");
+		} else if (player_index == 1){
+			window.alert("You Won :D");
+		} else {
+			window.alert("Player 2 Wins!")
+		}
+	}
+}
+
+
 function draw_circle(xpos, ypos, radius, fill) {
     ctx.beginPath();
     ctx.arc(xpos, ypos, radius, 0, 2 * Math.PI);
@@ -253,6 +275,7 @@ function initFunction() {
 					draw();
 				}
 				console.log("Choices:", p1_choice, " p2:", p2_choice);
+				win_check();
             }
         } catch (e) {
             console.warn("Bad WS sent from Server -> client", e, msg);
