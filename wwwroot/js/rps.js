@@ -258,25 +258,30 @@ function initFunction() {
                 cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
                 console.log(msg);
 
-                const value = msg.Value;
-                p1_wins = Number(value.Player1Wins);
-                p2_wins = Number(value.Player2Wins);
-                win_amt = Number(value.WinAmt);
-				p1_choice = Number(value.Player1Move);
-				p2_choice = Number(value.Player2Move);
+                const msg_struct = msg.Value;
+                p1_wins = Number(msg_struct.Player1Wins);
+                p2_wins = Number(msg_struct.Player2Wins);
+                win_amt = Number(msg_struct.WinAmt);
+				p1_choice = Number(msg_struct.Player1Move);
+				p2_choice = Number(msg_struct.Player2Move);
 
-				let newRound = Number(value.RoundNum);
+				let newRound = Number(msg_struct.RoundNum);
 				if(round_num < newRound){
 					round_num = newRound; 
 					// Call the draw function such that round end is set
-					draw(true, Number(value.Last_P1), Number(value.Last_P2));
+					draw(true, Number(msg_struct.Last_P1), Number(msg_struct.Last_P2));
 				}
 				else{
 					draw();
 				}
 				console.log("Choices:", p1_choice, " p2:", p2_choice);
 				win_check();
-            }
+            } else if (msg.Event === "chat") {
+            // {Event: "chat", Chat: chat_msg, From: Player_index} Player_index: 0 for p1 1 for p2
+            // Player_index: int
+            // Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
+            // as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
+			}
         } catch (e) {
             console.warn("Bad WS sent from Server -> client", e, msg);
         }

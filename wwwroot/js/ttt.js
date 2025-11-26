@@ -99,6 +99,18 @@ function windowResized() {
     hcell = canvas_height / 3;
 }
 
+async function showWin(state){
+	if(state == "Playing"){
+		return
+	} else if (state == "Win"){
+		await new Promise(r => setTimeout(r, 150));
+		window.alert("Game Over!");
+	} else if (state == "Draw"){
+		await new Promise(r => setTimeout(r, 150));
+		window.alert("Game Over!");
+	}
+}
+
 var alt = true; // this variable has no value except for demos
 
 // This function is bound to the canvas onclick function and as expected it calculates the
@@ -228,7 +240,10 @@ WSReceiver(socket, (msg) => {
             cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
             board = msg.Value;
             draw();
+			showWin(cur_state);
         } else if (msg.Event === "room.locked") {
+            const StateText = ["Playing", "Win", "Draw"];
+            cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
             isLocked = msg.locked;
             if (lockImg && lockButton) {
                 // Toggle class on/off to add dynamic dimming
@@ -238,6 +253,7 @@ WSReceiver(socket, (msg) => {
                     lockImg.classList.remove("locked");
                 }
             }
+			showWin(cur_state);
         } else if (msg.Event === "chat") {
             // {Event: "chat", Chat: chat_msg, From: Player_index} Player_index: 0 for p1 1 for p2
             // Player_index: int
