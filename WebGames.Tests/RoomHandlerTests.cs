@@ -6,6 +6,55 @@ using Game.Core;
 using SocketHandler.Core;
 using Xunit;
 
+/*
+Prologue
+
+Authors: Barrett Brown, Minh Vu, Johnaton Gott
+Creation Date: 11/08/2025
+
+Description:
+- Provides unit tests for verifying the behavior of RoomHandler, the central component responsible for managing active rooms, player membership, game association, and state updates.
+- Ensures the stability of room creation, joining, leaving, and automatic cleanup logic.
+- Validates correctness of QuickPlay matching, state forwarding to GameHandlers, and protection against malformed or unauthorized state updates.
+- Confirms that RoomHandler reliably resolves rooms by client ID or room ID and supports concurrent join/create requests.
+
+Functions / Classes:
+- class RoomHandlerTester:
+    - CreateRoomTest:
+        Checks that a new room is created and retrievable.
+    - FindRoomByClientTest:
+        Confirms that rooms can be looked up based on client membership.
+    - LeaveRoomTest:
+        Ensures that removing a client adjusts room membership correctly.
+    - LeaveRoomDeleteRoomTest:
+        Verifies that rooms are deleted when their last client leaves.
+    - LeaveRoomNoClientTest:
+        Ensures leaving a room with a nonexistent client does not corrupt state.
+    - HandleStateTest / HandleStateMalformedTest:
+        Validates routing of move updates to the corresponding GameHandler and correct handling of invalid states.
+    - HandleStateClientNotInRoomTest:
+        Ensures requests from clients not in the room do not affect gameplay.
+    - CreateDuplicateRoomTest:
+        Checks that repeated room creation requests do not produce duplicates.
+    - CreateSameRoomTest:
+        Simulates concurrent join/create requests to ensure thread-safe room initialization.
+    - QuickPlayTestAsync / QuickPlayRoomsFullTest:
+        Tests matchmaking logic and capacity checks for joining open rooms.
+
+Inputs:
+- ClientInfo objects containing client and room identifiers.
+- Game key strings specifying which game type a room should host.
+- JSON state messages forwarded from the client.
+
+Outputs:
+- Assertions ensuring:
+    - correct room lifecycle behavior,
+    - proper routing of state to the game engine,
+    - correct join order and room capacity handling,
+    - safe behavior under malformed input and concurrency.
+
+*/
+
 public class RoomHandlerTester
 {
   [Fact]

@@ -3,7 +3,7 @@ import { connect, send, WSReceiver } from "./wsHelper.js";
 /*
 Prologue
 
-Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Authors: Barrett Brown, Adam Berry
 Creation Date: 11/08/2025
 
 Description:
@@ -62,8 +62,8 @@ Outputs:
 
 // Used to represent the square states without random magic numbers
 const empty = 0,
-square_x = 1,
-square_o = 2;
+    square_x = 1,
+    square_o = 2;
 
 // These variables hold the canvas context and canvas metadata
 var canvas = document.getElementById("ttt-game");
@@ -90,105 +90,105 @@ var hcell = canvas_height / 3;
 // TODO: Match Board to match format of backend board or upon recieving read/update this properly (More of a note about format mismatch *could just backend that works)
 let cur_state = "Playing";
 var board = [
-	[empty, empty, empty],
-	[empty, empty, empty],
-	[empty, empty, empty],
+    [empty, empty, empty],
+    [empty, empty, empty],
+    [empty, empty, empty],
 ];
 
 // Function bound to the window's onresized event
 function windowResized() {
-	canvas_width = canvas.width;
-	canvas_height = canvas.height;
-	wcell = canvas_width / 3;
-	hcell = canvas_height / 3;
+    canvas_width = canvas.width;
+    canvas_height = canvas.height;
+    wcell = canvas_width / 3;
+    hcell = canvas_height / 3;
 }
 
-async function showWin(state){
-	if(state == "Playing"){
-		return
-	} else if (state == "Win"){
-		await new Promise(r => setTimeout(r, 150));
-		window.alert("Game Over!");
-	} else if (state == "Draw"){
-		await new Promise(r => setTimeout(r, 150));
-		window.alert("Game Over!");
-	}
+async function showWin(state) {
+    if (state == "Playing") {
+        return;
+    } else if (state == "Win") {
+        await new Promise((r) => setTimeout(r, 150));
+        window.alert("Game Over!");
+    } else if (state == "Draw") {
+        await new Promise((r) => setTimeout(r, 150));
+        window.alert("Game Over!");
+    }
 }
 
 // This function is bound to the canvas onclick function and as expected it calculates the
 // Row and Column that the user clicked on and then edits the board appropriately
 // Testing Methodology: Clicked on the screen a bunch of times and it worked, even at the bounds
 function clickHandler(event) {
-	// Get the absolute X/Y clicked on and adjust it by the canvas' on screen position
-	var bounds = canvas.getBoundingClientRect();
-	const canvas_click_y = event.clientY - bounds.top;
-	const canvas_click_x = event.clientX - bounds.left;
+    // Get the absolute X/Y clicked on and adjust it by the canvas' on screen position
+    var bounds = canvas.getBoundingClientRect();
+    const canvas_click_y = event.clientY - bounds.top;
+    const canvas_click_x = event.clientX - bounds.left;
 
-	const clicked_row = Math.floor(canvas_click_y / hcell);
-	const clicked_col = Math.floor(canvas_click_x / wcell);
+    const clicked_row = Math.floor(canvas_click_y / hcell);
+    const clicked_col = Math.floor(canvas_click_x / wcell);
 
-	// This "send" is how we send to the backend Idk what alt does so I left it for sake of not screwing you up later
-	// However this is formed gamehandler will recieve/deal with so knowing the form here/backend is important
-	send(socket, {
-		Event: "move",
-		Row: clicked_row,
-		Col: clicked_col,
-		Alias: window.CONFIG.player_alias,
-	});
-	alt = !alt;
+    // This "send" is how we send to the backend Idk what alt does so I left it for sake of not screwing you up later
+    // However this is formed gamehandler will recieve/deal with so knowing the form here/backend is important
+    send(socket, {
+        Event: "move",
+        Row: clicked_row,
+        Col: clicked_col,
+        Alias: window.CONFIG.player_alias,
+    });
+    alt = !alt;
 }
 
 // Used for drawing the basic lines to the screen
 // Testing Methodology: I ran this function on load and the lines appear as expected
 function drawGrid() {
-	// Creating the horizontal bars
-	ctx.moveTo(0, hcell);
-	ctx.lineTo(canvas_width, hcell);
-	ctx.stroke();
+    // Creating the horizontal bars
+    ctx.moveTo(0, hcell);
+    ctx.lineTo(canvas_width, hcell);
+    ctx.stroke();
 
-	ctx.moveTo(0, 2 * hcell);
-	ctx.lineTo(canvas_width, 2 * hcell);
-	ctx.stroke();
+    ctx.moveTo(0, 2 * hcell);
+    ctx.lineTo(canvas_width, 2 * hcell);
+    ctx.stroke();
 
-	// Creating the vertical bars
-	ctx.moveTo(wcell, 0);
-	ctx.lineTo(wcell, canvas_height);
-	ctx.stroke();
+    // Creating the vertical bars
+    ctx.moveTo(wcell, 0);
+    ctx.lineTo(wcell, canvas_height);
+    ctx.stroke();
 
-	ctx.moveTo(2 * wcell, 0);
-	ctx.lineTo(2 * wcell, canvas_height);
-	ctx.stroke();
+    ctx.moveTo(2 * wcell, 0);
+    ctx.lineTo(2 * wcell, canvas_height);
+    ctx.stroke();
 }
 
 // This is used to draw the x's and o's on the board
 // Input: The board 2d array
 // Testing Methodology: tested a variety of states in the 2d array with empty, O's, and X's
 function drawState() {
-	ctx.font = "48px serif";
-	for (var row = 0; row < board.length; row++) {
-		for (var col = 0; col < board[0].length; col++) {
-			let content = "";
-			if (board[row][col] == square_x) {
-				content = "X";
-			} else if (board[row][col] == square_o) {
-				content = "O";
-			}
-			let textWidth = ctx.measureText(content).width;
-			ctx.fillText(
-				content,
-				col * wcell + wcell * 0.5 - textWidth / 2,
-				row * hcell + hcell * 0.5 + 18
-			);
-		}
-	}
+    ctx.font = "48px serif";
+    for (var row = 0; row < board.length; row++) {
+        for (var col = 0; col < board[0].length; col++) {
+            let content = "";
+            if (board[row][col] == square_x) {
+                content = "X";
+            } else if (board[row][col] == square_o) {
+                content = "O";
+            }
+            let textWidth = ctx.measureText(content).width;
+            ctx.fillText(
+                content,
+                col * wcell + wcell * 0.5 - textWidth / 2,
+                row * hcell + hcell * 0.5 + 18
+            );
+        }
+    }
 }
 
 // This function is called on screen load and after editBoard() is called
 // it is very important this function is called after every update
 function draw() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawGrid();
-	drawState();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    drawState();
 }
 
 // --------------- Sockets ---------------
@@ -196,56 +196,56 @@ const socket = connect("tictactoe");
 socket.onclose = () => console.log("Closed connection to socket server");
 
 WSReceiver(socket, (msg) => {
-	// Built this out a little to help you but this expects the backend to pass back
-	// {
-	//    Event: "view",
-	//    Board: [[0,0,0],[0,0,0],[0,0,0]],
-	//    State: 0,1,2
-	// }
-	// Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
-	try {
-		if (msg?.Event === "view" && Array.isArray(msg.Value)) {
-			const StateText = ["Playing", "Win", "Draw"];
-			cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
-			board = msg.Value;
-			draw();
-			showWin(cur_state);
-		} else if (msg.Event === "room.locked") {
-			const StateText = ["Playing", "Win", "Draw"];
-			cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
-			isLocked = msg.locked;
-			if (lockImg && lockButton) {
-				// Toggle class on/off to add dynamic dimming
-				if (isLocked) {
-					lockImg.classList.add("locked");
-				} else {
-					lockImg.classList.remove("locked");
-				}
-			}
-			showWin(cur_state);
-		} else if (msg.Event === "chat") {
-			// {Event: "chat", Chat: chat_msg, From: Player_index} Player_index: 0 for p1 1 for p2
-			// Player_index: int
-			// Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
-			// as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
-		} else {
-			console.warn("Unknown type of ws response", msg.Event);
-		}
-	} catch (e) {
-		console.warn("Bad WS sent from Server -> client", e, msg);
-	}
+    // Built this out a little to help you but this expects the backend to pass back
+    // {
+    //    Event: "view",
+    //    Board: [[0,0,0],[0,0,0],[0,0,0]],
+    //    State: 0,1,2
+    // }
+    // Something that might need to be checked is compatability between the backend enum version and frontend representation of cells i.e: if backend is 0,1,2 (empty, x, o) and front is 0,1,2 (empty, o, x)
+    try {
+        if (msg?.Event === "view" && Array.isArray(msg.Value)) {
+            const StateText = ["Playing", "Win", "Draw"];
+            cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
+            board = msg.Value;
+            draw();
+            showWin(cur_state);
+        } else if (msg.Event === "room.locked") {
+            const StateText = ["Playing", "Win", "Draw"];
+            cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
+            isLocked = msg.locked;
+            if (lockImg && lockButton) {
+                // Toggle class on/off to add dynamic dimming
+                if (isLocked) {
+                    lockImg.classList.add("locked");
+                } else {
+                    lockImg.classList.remove("locked");
+                }
+            }
+            showWin(cur_state);
+        } else if (msg.Event === "chat") {
+            // {Event: "chat", Chat: chat_msg, From: Player_index} Player_index: 0 for p1 1 for p2
+            // Player_index: int
+            // Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
+            // as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
+        } else {
+            console.warn("Unknown type of ws response", msg.Event);
+        }
+    } catch (e) {
+        console.warn("Bad WS sent from Server -> client", e, msg);
+    }
 });
 // ---------------  ---------------
 
 // The entry point of this file
 function init() {
-	if (lockButton && lockImg) {
-		lockButton.addEventListener("click", () => {
-			send(socket, { Event: "room.lock", locked: !isLocked });
-		});
-	}
+    if (lockButton && lockImg) {
+        lockButton.addEventListener("click", () => {
+            send(socket, { Event: "room.lock", locked: !isLocked });
+        });
+    }
 
-	draw();
+    draw();
 }
 
 init();

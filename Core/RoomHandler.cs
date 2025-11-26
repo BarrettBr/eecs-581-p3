@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 /*
 Prologue
 
-Authors: Barrett Brown, Adam Berry, Alex Phibbs, Minh Vu, Jonathan Gott
+Authors: Barrett Brown
 Creation Date: 11/08/2025
 
 Description:
