@@ -99,7 +99,7 @@ function win_check(){
 		}
 	}
 	if(p2_wins == win_amt){
-		if(player_index == 1){
+		if(player_index == 0){
 			window.alert("You Lost :(");
 		} else if (player_index == 1){
 			window.alert("You Won :D");
