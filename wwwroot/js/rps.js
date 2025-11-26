@@ -152,8 +152,6 @@ async function draw(isRoundEnd = false, override_p1=null, override_p2=null) {
 
 	// -------------  set the image for the local player -------------
 	//
-	// local_choice is set off the more "important" p1_choice and p2_choice
-    console.log(local_choice);
 	if (local_choice == rock) {
 		vsize = size;
 		hsize = size * 1.499;
@@ -168,7 +166,6 @@ async function draw(isRoundEnd = false, override_p1=null, override_p2=null) {
 		local_image.src = "/images/scissors.png";
 	} else {
 		// for now this isn't defined but we could add a placeholder
-		return;
 	}
 
 	// -------------  set the image for the "remote" player -------------
@@ -187,7 +184,6 @@ async function draw(isRoundEnd = false, override_p1=null, override_p2=null) {
 		remote_image.src = "/images/scissors.png";
 	} else {
 		// for now this isn't defined but we could add a placeholder
-		return;
 	}
 
 	if(isRoundEnd){
@@ -244,6 +240,8 @@ function initFunction() {
                 p1_wins = Number(value.Player1Wins);
                 p2_wins = Number(value.Player2Wins);
                 win_amt = Number(value.WinAmt);
+				p1_choice = Number(value.Player1Move);
+				p2_choice = Number(value.Player2Move);
 
 				let newRound = Number(value.RoundNum);
 				if(round_num < newRound){
@@ -252,8 +250,6 @@ function initFunction() {
 					draw(true, Number(value.Last_P1), Number(value.Last_P2));
 				}
 				else{
-					p1_choice = Number(value.p1_move);
-					p2_choice = Number(value.p2_move);
 					draw();
 				}
 				console.log("Choices:", p1_choice, " p2:", p2_choice);
