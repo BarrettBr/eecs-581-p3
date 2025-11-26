@@ -21,8 +21,9 @@ Outputs:
 const rock = 0,
     paper = 1,
     scissors = 2,
-    none = 3;
-const Moves = { rock, paper, scissors }; // used to convert the input to the enum style
+    unset = 3,
+	set = 4;
+const Moves = { rock, paper, scissors, unset, set}; // used to convert the input to the enum style
 var socket;
 
 // These variables hold the canvas context and canvas metadata
@@ -34,8 +35,10 @@ const ui_blue = "#0172ad";
 var p1_wins = 0;
 var p2_wins = 0;
 
-var p1_choice = none;
-var p2_choice = none;
+var p1_choice = unset;
+var p2_choice = unset;
+
+var round_num = 0;
 
 var win_amt = 3;
 let cur_state;
@@ -97,7 +100,7 @@ function draw_circle(xpos, ypos, radius, fill) {
     ctx.stroke();
 }
 
-function draw() {
+async function draw(isRoundEnd = false, override_p1=null, override_p2=null) {
     ctx.clearRect(0, 0, canvas_width, canvas_height);
 
     // all of these config variables have pixel values
@@ -108,15 +111,25 @@ function draw() {
     const spacing = 30;
 	let local_wins = 0;
 	let remote_wins = 0;
+	let local_choice = unset;
+	let remote_choice = unset;
 
 	// Check if we are the "first" player
+	// Also decide what we should show to the user
 	if(player_index == 0){
 		local_wins = p1_wins;
 		remote_wins = p2_wins;
+		local_choice  = override_p1 ?? p1_choice;
+		remote_choice = override_p2 ?? p2_choice;
 	} else {
 		local_wins = p2_wins;
 		remote_wins = p1_wins;
+		local_choice  = override_p2 ?? p2_choice;
+		remote_choice = override_p1 ?? p1_choice;
 	}
+
+	// ------------- Set Win Trackers -------------
+	//
     // Add the win tracker for the local user
     for (let x = 0; x < num_rounds_to_win; x++) {
         let filled = x < local_wins;
@@ -130,52 +143,70 @@ function draw() {
         draw_circle(start_pos + x * spacing, vpad, rad, filled);
     }
 
-    let base_image = new Image();
+    let local_image = new Image();
+    let remote_image = new Image();
 
     var size = 120;
     let vsize = 0;
     let hsize = 0;
 
-    console.log(p1_choice);
-    if (player_index === 0 && p1_choice !== none) {
-        if (p1_choice == rock) {
-            vsize = size * 1.499;
-            hsize = size;
-            base_image.src = "/images/stone.png";
-        } else if (p1_choice == paper) {
-            vsize = size;
-            hsize = size * 1.705;
-            base_image.src = "/images/paper.png";
-        } else if (p1_choice == scissors) {
-            vsize = size * 1.3;
-            hsize = size * 1.3;
-            base_image.src = "/images/scissors.png";
-        } else {
-            // for now this isn't defined but we could add a placeholder
-            return;
-        }
-    } else if (player_index === 1 && p2_choice !== none) {
-        // Currently just copy pasted code from p1 over and changed choice var but needs to be updated to show on right
-        if (p2_choice == rock) {
-            vsize = size * 1.499;
-            hsize = size;
-            base_image.src = "/images/stone.png";
-        } else if (p2_choice == paper) {
-            vsize = size;
-            hsize = size * 1.705;
-            base_image.src = "/images/paper.png";
-        } else if (p2_choice == scissors) {
-            vsize = size * 1.3;
-            hsize = size * 1.3;
-            base_image.src = "/images/scissors.png";
-        } else {
-            // for now this isn't defined but we could add a placeholder
-            return;
-        }
-    }
-    base_image.onload = function () {
-        ctx.drawImage(base_image, hpad - 20, vpad * 3, size, size);
-    };
+	// -------------  set the image for the local player -------------
+	//
+	// local_choice is set off the more "important" p1_choice and p2_choice
+    console.log(local_choice);
+	if (local_choice == rock) {
+		vsize = size;
+		hsize = size * 1.499;
+		local_image.src = "/images/stone.png";
+	} else if (local_choice == paper) {
+		vsize = size * 1.605;
+	 	hsize = size;
+		local_image.src = "/images/paper.png";
+	} else if (local_choice == scissors) {
+		vsize = size * 1.3;
+		hsize = size * 1.3;
+		local_image.src = "/images/scissors.png";
+	} else {
+		// for now this isn't defined but we could add a placeholder
+		return;
+	}
+
+	// -------------  set the image for the "remote" player -------------
+	//
+	if (remote_choice == rock) {
+		vsize = size;
+		hsize = size * 1.499;
+		remote_image.src = "/images/stone.png";
+	} else if (remote_choice == paper) {
+		vsize = size * 1.605;
+	 	hsize = size;
+		remote_image.src = "/images/paper.png";
+	} else if (remote_choice == scissors) {
+		vsize = size * 1.3;
+		hsize = size * 1.3;
+		remote_image.src = "/images/scissors.png";
+	} else {
+		// for now this isn't defined but we could add a placeholder
+		return;
+	}
+
+	if(isRoundEnd){
+		local_image.onload = function () {
+			ctx.drawImage(local_image, hpad - 20, vpad * 3, vsize, hsize);
+		};
+
+		remote_image.onload = function () {
+			ctx.drawImage(remote_image, canvas_width - hsize - hpad, vpad * 3, vsize, hsize);
+		};
+		await new Promise(r => setTimeout(r, 2000));
+
+		draw();
+	} else {
+		local_image.onload = function () {
+			ctx.drawImage(local_image, hpad - 20, vpad * 3, vsize, hsize);
+		};
+
+	}
 }
 
 function initFunction() {
@@ -212,11 +243,20 @@ function initFunction() {
                 const value = msg.Value;
                 p1_wins = Number(value.Player1Wins);
                 p2_wins = Number(value.Player2Wins);
-                p1_choice = Number(value.Player1Move);
-                p2_choice = Number(value.Player2Move);
                 win_amt = Number(value.WinAmt);
 
-                draw();
+				let newRound = Number(value.RoundNum);
+				if(round_num < newRound){
+					round_num = newRound; 
+					// Call the draw function such that round end is set
+					draw(true, Number(value.Last_P1), Number(value.Last_P2));
+				}
+				else{
+					p1_choice = Number(value.p1_move);
+					p2_choice = Number(value.p2_move);
+					draw();
+				}
+				console.log("Choices:", p1_choice, " p2:", p2_choice);
             }
         } catch (e) {
             console.warn("Bad WS sent from Server -> client", e, msg);

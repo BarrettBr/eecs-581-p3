@@ -280,9 +280,15 @@ namespace Game.Core
 		//
 		public int p1_wins;
 		public int p2_wins;
-		private enum Move { Rock, Paper, Scissor, Unset };
+		private enum Move { Rock, Paper, Scissor, Unset, Set};
+		// These are used to store the current buffered/selected moves for each players
 		private Move p1_move;
 		private Move p2_move;
+		// These are used to indicate what each player selected last round so that we can show the results to the player
+		private Move last_p1;
+		private Move last_p2;
+
+		private int round;
 		private int amt_to_win = 3;
 		public override int MaxPlayers => 2; // Used as "Max PLayers playing" not spectators, allows for easy checking against index in Players dictionary and quick play open room checking
 
@@ -298,7 +304,10 @@ namespace Game.Core
 			Player1Move = p1_move,
 			Player2Move = p2_move,
 			Status = _state.ToString(),
-			WinAmt = amt_to_win 
+			WinAmt = amt_to_win, 
+			RoundNum = round,
+			Last_P1 = last_p1,
+			Last_P2 = last_p2
 		};
 
 		public RockPaperScissors(){
@@ -306,6 +315,9 @@ namespace Game.Core
 			p2_wins = 0;
 			p1_move = Move.Unset;
 			p2_move = Move.Unset;
+			round = 0;
+			last_p1 = Move.Unset;
+			last_p2 = Move.Unset;
 		}
 
 		public override bool Play(string state, ClientInfo client)
@@ -384,10 +396,14 @@ namespace Game.Core
 				}
 				Console.WriteLine($"P1 wins: {p1_wins}, P2 wins: {p2_wins}");
 
+				// This will be used to let both players know what happened 
+				round += 1;
+				last_p1 = p1_move;
+				last_p2 = p2_move;
+
 				p1_move = Move.Unset;
 				p2_move = Move.Unset;
 			}
-
 		}
 
 		private void GameWinDetection()
