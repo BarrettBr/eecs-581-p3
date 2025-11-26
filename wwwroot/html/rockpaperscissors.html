@@ -39,21 +39,28 @@ Outputs:
 		<link rel="stylesheet" href="/css/pico.min.css">
 	</head>
 	<body>
-		<main class="main-content" style="margin: 0 auto; max-width: 60vw;">
-			<!-- The text inside the canvas is only for any potential screen readers-->
-			<canvas class="canvas-centered" id="rps-game" tabindex="0">
-				This is an interactive rock paper scissors game.
-				It requires interaction by clicking  
-			</canvas>
+		<main class="container">
+			<div class="main-content game-chat-wrapper">
+				<div class="rps-wrapper">
+					
+					<canvas class="canvas-centered" id="rps-game" tabindex="0">
+						This is an interactive rock paper scissors game. It requires interaction by clicking.
+					</canvas>
 
-			<div class="grid" style="max-width:30vw; margin: 0 auto;">
-				<button data-choice="rock"> Rock </button>
-				<button data-choice="paper"> Paper </button>
-				<button data-choice="scissors"> Scissors </button>
+					<div class="button-row">
+						<button data-choice="rock">Rock</button>
+						<button data-choice="paper">Paper</button>
+						<button data-choice="scissors">Scissors</button>
+					</div>
+
+				</div>
+
+				<chat-box></chat-box>
 			</div>
 		</main>
 		<script src="/js/config.js"></script> 
 		<script type="module" src="/js/wsHelper.js"></script>
 		<script type="module" src="/js/rps.js"></script> 
+		<script type="module" src="/js/chatbox.js"></script>
 	</body>
 </html>

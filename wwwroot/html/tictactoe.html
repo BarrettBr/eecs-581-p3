@@ -75,7 +75,7 @@ Outputs:
     </head>
     <body>
         <main class="container">
-            <article class="main-content">
+            <article class="main-content container" style="max-width: 75vw;"y>
                 <button id="room-lock" type="button">
                     <img
                         id="room-lock-img"
@@ -83,7 +83,7 @@ Outputs:
                     />
                 </button>
                 <!-- The text inside the canvas is only for any potential screen readers-->
-                <canvas id="ttt-game" width="600" height="600" tabindex="0">
+                <canvas id="ttt-game" width="600" height="600" style="padding: 20px;" tabindex="0">
                     This is an interactive tic-tac-toe game. It requires
                     interaction by clicking a free square to place a piece
                 </canvas>
@@ -93,9 +93,11 @@ Outputs:
                     id="game-status"
                     style="display: none"
                 ></div>
+				<chat-box></chat-box>
             </article>
         </main>
         <script src="/js/config.js"></script>
         <script type="module" src="/js/ttt.js"></script>
+		<script type="module" src="/js/chatbox.js"></script>
     </body>
 </html>
