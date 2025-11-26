@@ -106,16 +106,27 @@ function draw() {
     const hpad = 40;
     const vpad = 60;
     const spacing = 30;
+	let local_wins = 0;
+	let remote_wins = 0;
 
+	// Check if we are the "first" player
+	if(player_index == 0){
+		local_wins = p1_wins;
+		remote_wins = p2_wins;
+	} else {
+		local_wins = p2_wins;
+		remote_wins = p1_wins;
+	}
     // Add the win tracker for the local user
     for (let x = 0; x < num_rounds_to_win; x++) {
-        let filled = x < p1_wins;
+        let filled = x < local_wins;
         draw_circle(x * spacing + hpad, vpad, rad, filled);
     }
+
     // Add the win tracker for their opponent
     const start_pos = canvas_width - hpad - num_rounds_to_win * spacing;
     for (let x = 0; x < num_rounds_to_win; x++) {
-        let filled = x < p2_wins;
+        let filled = x < remote_wins;
         draw_circle(start_pos + x * spacing, vpad, rad, filled);
     }
 
