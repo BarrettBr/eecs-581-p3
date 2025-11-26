@@ -6,15 +6,40 @@ Authors: Adam Berry
 Creation Date: 11/08/2025
 
 Description:
-- Serves as the intermediary between the User and the backend
-- Pipes user input to the server and updates the interface when the server sends an update
+- Acts as the frontend controller and communication layer for the Rock–Paper–Scissors game.
+- Handles all player input (button presses), sends moves to the backend through WebSockets,
+  and receives state updates from the server.
+- Maintains and renders the entire game UI using an HTML5 canvas, including:
+    - Win counters
+    - Player choices
+    - Round transitions and animations
+- Synchronizes state between the local client and the remote opponent.
+
+Contents:
+- Game constants and enums for representing moves and UI states
+- Canvas initialization, resizing logic, and drawing routines
+- WebSocket setup and message handling (via wsHelper.js)
+- Input handling for UI buttons
+- Win checking and round-end behavior
+- Utility functions (bounds checking, drawing helpers)
 
 Inputs:
-- DOM information 
-- Events (such as onClick{)
+- User interactions:
+    - Button presses for "rock", "paper", and "scissors"
+    - Window resizing events
+- WebSocket messages from the backend:
+    - Player index assignment
+    - Game state updates (wins, moves, rounds)
 
 Outputs:
-- Canvas/State updates
+- Messages sent to the server:
+    - { Event: "move", selected_move: number }
+- Visual updates to the canvas:
+    - Player choices
+    - Opponent choices
+    - Win tracker updates
+    - Round transitions
+- Alerts for win/loss conditions
 */
 
 // Used instead of magic numbers
