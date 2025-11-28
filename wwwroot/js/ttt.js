@@ -127,15 +127,14 @@ function clickHandler(event) {
     const clicked_row = Math.floor(canvas_click_y / hcell);
     const clicked_col = Math.floor(canvas_click_x / wcell);
 
-    // This "send" is how we send to the backend Idk what alt does so I left it for sake of not screwing you up later
-    // However this is formed gamehandler will recieve/deal with so knowing the form here/backend is important
+    // This "send" is how we send to the backend
+    // However this is formed is how gamehandler will recieve/deal with so knowing the form here/backend is important
     send(socket, {
         Event: "move",
         Row: clicked_row,
         Col: clicked_col,
         Alias: window.CONFIG.player_alias,
     });
-    alt = !alt;
 }
 
 // Used for drawing the basic lines to the screen
