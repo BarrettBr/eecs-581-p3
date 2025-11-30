@@ -7,7 +7,7 @@ using SocketHandler.Core;
 /*
 Prologue
 
-Authors: Barrett Brown, Adam Berry
+Authors: Barrett Brown, Adam Berry, Alexander Phibbs
 Creation Date: 11/08/2025
 
 Description:
