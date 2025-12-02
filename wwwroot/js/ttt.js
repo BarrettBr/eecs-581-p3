@@ -208,9 +208,7 @@ WSReceiver(socket, (msg) => {
             const StateText = ["Playing", "Win", "Draw"];
             cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
             board = msg.Value;
-            if (typeof msg.Player_Index === "number") {
-                window.__GLOBAL_PLAYER_INDEX__ = msg.Player_Index;
-            }
+
             draw();
             showWin(cur_state);
         } else if (msg.Event === "room.locked") {
