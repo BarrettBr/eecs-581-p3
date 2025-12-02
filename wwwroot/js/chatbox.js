@@ -85,6 +85,10 @@ class ChatBox extends HTMLElement {
 			.player2 {
 				background: #cf6a6ab6;
 			}
+			.spectator {
+				background: #82d67bff;
+				font-style: italic;
+			}
 			</style>
 			<div class="chat">
 				<div class="messages" id="chat-messages"></div>
@@ -99,18 +103,22 @@ class ChatBox extends HTMLElement {
 	connectedCallback(){
 		this.socket = window.__GLOBAL_SOCKET;
 		this.player_index = window.__GLOBAL_PLAYER_INDEX__;
+		// references to the message display and the chat input and send button
 		this.msgBox = this.shadowRoot.getElementById("chat-messages");
 		const input = this.shadowRoot.getElementById("chat-input");
 		const button = this.shadowRoot.getElementById("send-button");
 
+		// When send is clicked, ignore empty messages, or send non empty messages to the backend
 		button.addEventListener("click", () => {
 			const text = input.value.trim();
 			if (text.length === 0) return; 
 
 			this.send_chat(this.socket, this.player_index, text);
+			// clear chat input box after message is sent
 			input.value = "";
 		});
 
+		// when enter is pressed in chat input, message is sent (allow enter to work as button)
 		input.addEventListener("keypress", (e) => {
 			if (e.key === "Enter") {
 				button.click(); 
@@ -118,6 +126,7 @@ class ChatBox extends HTMLElement {
 		}); 
 	}
 
+	// sends messages to the backend
 	send_chat(socket, player_index, chat_message){
 		send(socket, {
 			Event: "chat",
@@ -130,12 +139,23 @@ class ChatBox extends HTMLElement {
 		const div = document.createElement("div"); 
 		div.classList.add("msg"); 
 
-		if (fromIndex === 0) div.classList.add("player1"); 
-		else div.classList.add("player2"); 
+		// determine who is sending the message
+		if (fromIndex === 0) {
+			div.classList.add("player1");
+			div.textContent = `Player ${fromIndex + 1}: ${text}`;
+		} 
+		else if (fromIndex === 1){
+			div.classList.add("player2"); 
+			div.textContent = `Player ${fromIndex + 1}: ${text}`;
+		}
+		else {
+			div.classList.add("spectator");
+			div.textContent = `Spectator: ${text}`;
+		}
 
-		div.textContent = `Player ${fromIndex + 1}: ${text}`; 
-
+		// add message in the chat box
 		this.msgBox.appendChild(div);
+		// auto-scroll so that the most recent message is always shown
 		this.msgBox.scrollTop = this.msgBox.scrollHeight; 
 	}
 

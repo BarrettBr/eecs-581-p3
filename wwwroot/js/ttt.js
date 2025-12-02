@@ -229,8 +229,11 @@ WSReceiver(socket, (msg) => {
             // Player_index: int
             // Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
             // as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
-            const panel = document.querySelector("chat-box"); 
-            panel?.add_message(msg.Chat, msg.From); 
+            const chatbox = document.querySelector("chat-box"); 
+            const myIndex = window.__GLOBAL_PLAYER_INDEX__;
+            const senderIndex = msg.From; 
+            const isSpectator = (senderIndex !== 0 && senderIndex !== 1); 
+            chatbox?.add_message(msg.Chat, isSpectator ? -1 : senderIndex); 
         } else {
             console.warn("Unknown type of ws response", msg.Event);
         }

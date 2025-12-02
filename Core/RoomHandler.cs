@@ -197,7 +197,12 @@ namespace SocketHandler.Core
 
     public static async Task BroadcastView(Room room, string eventType, ClientInfo client, object? state = null)
     {
-      room.Game.Players.TryGetValue(client.ClientID, out int sender);
+      int sender;
+      if (!room.Game.Players.TryGetValue(client.ClientID, out sender))
+      {
+          sender = -1;
+      }
+
       object payload = eventType switch
       {
           "view" => new
