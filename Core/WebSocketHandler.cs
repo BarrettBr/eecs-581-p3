@@ -42,8 +42,9 @@ namespace SocketHandler.Core
   using System.Net.WebSockets;
   using System.Collections.Concurrent;
   using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using System.Text.Json;
 
-  public sealed class ClientInfo
+    public sealed class ClientInfo
   {
     // Description: Class that stores information about a client including their id, sokcet and the room they belong to.
     public required Guid ClientID { get; set; }
@@ -168,8 +169,8 @@ namespace SocketHandler.Core
         {
           // 3. Convert textual message from bytes to string
           string message = System.Text.Encoding.UTF8.GetString(webSocketPayload.ToArray());
-          await RoomHandler.HandleStateAsync(client, message);
           Console.WriteLine($"Client says {message}"); // TODO: Clean up or log post finishing up project; Debugging message of state from frontend
+          await RoomHandler.HandleStateAsync(client, message);
         }
       }
 

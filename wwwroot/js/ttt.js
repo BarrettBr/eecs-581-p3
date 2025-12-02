@@ -192,6 +192,7 @@ function draw() {
 
 // --------------- Sockets ---------------
 const socket = connect("tictactoe");
+window.__GLOBAL_SOCKET = socket; 
 socket.onclose = () => console.log("Closed connection to socket server");
 
 WSReceiver(socket, (msg) => {
@@ -207,6 +208,9 @@ WSReceiver(socket, (msg) => {
             const StateText = ["Playing", "Win", "Draw"];
             cur_state = StateText[msg.State] ?? "Playing"; // safe fallback
             board = msg.Value;
+            if (typeof msg.Player_Index === "number") {
+                window.__GLOBAL_PLAYER_INDEX__ = msg.Player_Index;
+            }
             draw();
             showWin(cur_state);
         } else if (msg.Event === "room.locked") {
@@ -227,6 +231,8 @@ WSReceiver(socket, (msg) => {
             // Player_index: int
             // Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
             // as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
+            const panel = document.querySelector("chat-box"); 
+            panel?.add_message(msg.Chat, msg.From); 
         } else {
             console.warn("Unknown type of ws response", msg.Event);
         }

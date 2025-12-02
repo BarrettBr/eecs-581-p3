@@ -163,7 +163,7 @@ namespace SocketHandler.Core
             {
               // Parse out the chat from the json state and then 
               var chat = Newtonsoft.Json.Linq.JObject.Parse(state);
-              var msg = (string?)chat["text"] ?? "";
+              var msg = (string?)chat["Chat"] ?? "";
               await BroadcastView(room, "chat", client, msg);
             }
             catch (Exception ex)
