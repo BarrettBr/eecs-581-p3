@@ -7,7 +7,7 @@ using SocketHandler.Core;
 /*
 Prologue
 
-Authors: Barrett Brown, Adam Berry, Alexander Phibbs
+Authors: Barrett Brown, Adam Berry
 Creation Date: 11/08/2025
 
 Description:
@@ -69,10 +69,20 @@ class Program
 
     // Leaderboard endpoint only have one so no need for a controller here
     app.MapGet("/api/leaderboard/{gameKey}", async (string gameKey) => {
-      var dbHandler = DatabaseHandler.Instance;
-      var wins = await dbHandler.GetWins(gameKey);
-      return Results.Ok(wins);
+      try
+      {
+        var dbHandler = DatabaseHandler.Instance;
+        var wins = await dbHandler.GetWins(gameKey);
+        return Results.Ok(wins);
+      } catch (Exception ex)
+      {
+        Console.Error.WriteLine($"Leaderboard Fetching Error: {ex}");
+        return Results.Ok(new Dictionary<string, int>()); // Send back empty leaderboard on fail
+      }
     });
+
+    var db = DatabaseHandler.Instance;
+    db.EnsureTables();
 
     app.Run();
   }

@@ -68,6 +68,20 @@ namespace SocketHandler.Core
       };
     }
 
+    public void EnsureTables()
+    {
+      using var connection = new SQLiteConnection("Data Source=game_database.db;Version=3;");
+      connection.Open();
+
+      using var command = new SQLiteCommand(connection);
+      command.CommandText = @"
+        CREATE TABLE IF NOT EXISTS TicTacToePlayers (
+          Alias TEXT PRIMARY KEY,
+          Wins  INTEGER NOT NULL DEFAULT 0
+        );";
+      command.ExecuteNonQuery();
+    }
+
     public async Task UpdateWin(Room room, string alias)
     {
       // Lookup client in database -> increment win number -> make sure this displays somewhere on site

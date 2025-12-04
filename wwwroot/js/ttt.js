@@ -129,11 +129,15 @@ function clickHandler(event) {
 
     // This "send" is how we send to the backend
     // However this is formed is how gamehandler will recieve/deal with so knowing the form here/backend is important
+    const alias =
+        (window.CONFIG && window.CONFIG.player_alias) ||
+        localStorage.getItem("player_alias") ||
+        "";
     send(socket, {
         Event: "move",
         Row: clicked_row,
         Col: clicked_col,
-        Alias: window.CONFIG.player_alias,
+        Alias: alias.trim(),
     });
 }
 
@@ -192,7 +196,7 @@ function draw() {
 
 // --------------- Sockets ---------------
 const socket = connect("tictactoe");
-window.__GLOBAL_SOCKET = socket; 
+window.__GLOBAL_SOCKET = socket;
 socket.onclose = () => console.log("Closed connection to socket server");
 
 WSReceiver(socket, (msg) => {
@@ -229,11 +233,11 @@ WSReceiver(socket, (msg) => {
             // Player_index: int
             // Might want to change the "from" to better show "who" is sending it but I just put it in as a filler for now
             // as chat_msg isn't defined this could be an enum of pre-determined messages or short "msgs" from the frontend
-            const chatbox = document.querySelector("chat-box"); 
+            const chatbox = document.querySelector("chat-box");
             const myIndex = window.__GLOBAL_PLAYER_INDEX__;
-            const senderIndex = msg.From; 
-            const isSpectator = (senderIndex !== 0 && senderIndex !== 1); 
-            chatbox?.add_message(msg.Chat, isSpectator ? -1 : senderIndex); 
+            const senderIndex = msg.From;
+            const isSpectator = senderIndex !== 0 && senderIndex !== 1;
+            chatbox?.add_message(msg.Chat, isSpectator ? -1 : senderIndex);
         } else {
             console.warn("Unknown type of ws response", msg.Event);
         }

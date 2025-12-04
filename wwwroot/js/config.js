@@ -31,7 +31,9 @@ Outputs:
 
 const protocol = location.protocol === "https:" ? "wss" : "ws"; // Changed it to be dynamic based on how thery accessed it, this shouldn't be needed since we run http but nice for later
 const host = location.host;
+const savedAlias = localStorage.getItem("player_alias");
+
 window.CONFIG = {
     socket_url: `${protocol}://${host}/ws`,
-    player_alias: null,
+    player_alias: savedAlias || null,
 };

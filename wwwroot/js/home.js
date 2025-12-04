@@ -25,8 +25,6 @@ Outputs:
 - Updates the client as needed, eg redirect
 */
 
-
-
 document.getElementById("quick-play").addEventListener("click", () => {
     console.log("Hit home.js click");
     const base = window.CONFIG?.socket_url;
@@ -61,6 +59,7 @@ document.getElementById("set-alias-btn").addEventListener("click", () => {
         return;
     }
     window.CONFIG.player_alias = alias;
+    localStorage.setItem("player_alias", alias);
     console.log(`Alias set to: ${alias}`);
     aliasInput.value = "";
 });

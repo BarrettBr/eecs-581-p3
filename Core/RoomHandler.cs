@@ -122,6 +122,10 @@ namespace SocketHandler.Core
         // Added lock to prevent 2 users from playing at the same time
         var event_state = ParseEvent(state)?.ToLowerInvariant();
         var alias = event_state == "move" ? Newtonsoft.Json.Linq.JObject.Parse(state)?["Alias"]?.ToString() : null;
+        if (string.IsNullOrWhiteSpace(alias))
+        {
+          alias = null;
+        }
         switch (event_state)
         {
           case "move":
@@ -135,7 +139,7 @@ namespace SocketHandler.Core
             {
               await BroadcastView(room, "view", client);
               // Put if inside to handle accidentally doing more than 1 win per game
-              if (room.Game.state == State.Win && alias != null){
+              if (room.Game.state == State.Win && !string.IsNullOrWhiteSpace(alias)){
                 await DatabaseHandler.Instance.UpdateWin(room, alias);
               }
             }
@@ -182,7 +186,7 @@ namespace SocketHandler.Core
             if (ChangedDefault)
             {
               await BroadcastView(room, "view", client);
-              if (room.Game.state == State.Win && alias != null){
+              if (room.Game.state == State.Win && !string.IsNullOrWhiteSpace(alias)){
                 await DatabaseHandler.Instance.UpdateWin(room, alias);
               }
             }
