@@ -78,6 +78,7 @@ class ChatBox extends HTMLElement {
 				border-radius: 4px;
 				line-height: 1.2;
 				font-size: 14px;
+				color: black;
 			}
 			.player1 {
 				background: #8ed6e2ff;
