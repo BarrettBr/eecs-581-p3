@@ -1,65 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leaderboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
-    h1 { text-align: center; }
-    #leaderboard-container { max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
-    th { background: #eee; }
-  </style>
-</head>
-<body>
-  <h1>Leaderboard</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Leaderboard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f5f5f5;
+                margin: 0;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+            }
+            #leaderboard-container {
+                max-width: 600px;
+                margin: 20px auto;
+                background: white;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th,
+            td {
+                padding: 12px;
+                border-bottom: 1px solid #ddd;
+                text-align: left;
+            }
+            th {
+                background: #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Leaderboard</h1>
 
-  <div id="leaderboard-container">
-    <label for="game-select">Select Game:</label>
-    <select id="game-select">
-      <option value="tictactoe">Tic Tac Toe</option>
-    </select>
+        <div id="leaderboard-container">
+            <label for="game-select">Select Game:</label>
+            <select id="game-select">
+                <option value="tictactoe">Tic Tac Toe</option>
+                <option value="rockpaperscissors">Rock Paper Scissors</option>
+            </select>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Alias</th>
-          <th>Wins</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboard-body">
-      </tbody>
-    </table>
-  </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Alias</th>
+                        <th>Wins</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body"></tbody>
+            </table>
+        </div>
 
-  <script>
-    async function fetchLeaderboard(gameKey) {
-      try {
-        const response = await fetch(`/api/leaderboard/${gameKey}`);
-        const data = await response.json();
+        <script>
+            async function fetchLeaderboard(gameKey) {
+                try {
+                    const response = await fetch(`/api/leaderboard/${gameKey}`);
+                    const data = await response.json();
 
-        const tbody = document.getElementById("leaderboard-body");
-        tbody.innerHTML = "";
+                    const tbody = document.getElementById("leaderboard-body");
+                    tbody.innerHTML = "";
 
-        const entries = Object.entries(data).sort((a,b) => b[1] - a[1]);
+                    const entries = Object.entries(data).sort(
+                        (a, b) => b[1] - a[1]
+                    );
 
-        for (const [alias, wins] of entries) {
-          const row = document.createElement("tr");
-          row.innerHTML = `<td>${alias}</td><td>${wins}</td>`;
-          tbody.appendChild(row);
-        }
-      } catch (err) {
-        console.error("Failed to load leaderboard", err);
-      }
-    }
+                    for (const [alias, wins] of entries) {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `<td>${alias}</td><td>${wins}</td>`;
+                        tbody.appendChild(row);
+                    }
+                } catch (err) {
+                    console.error("Failed to load leaderboard", err);
+                }
+            }
 
-    document.getElementById("game-select").addEventListener("change", (e) => {
-      fetchLeaderboard(e.target.value);
-    });
+            document
+                .getElementById("game-select")
+                .addEventListener("change", (e) => {
+                    fetchLeaderboard(e.target.value);
+                });
 
-    fetchLeaderboard("tictactoe");
-  </script>
-</body>
+            fetchLeaderboard("tictactoe");
+        </script>
+    </body>
 </html>

@@ -64,6 +64,7 @@ namespace SocketHandler.Core
       return gameKey.ToLowerInvariant() switch
       {
         "tictactoe" => "TicTacToePlayers",
+        "rockpaperscissors" => "RockPaperScissorsPlayers",
         _ => throw new NotImplementedException("Game type not found for database table lookup"),
       };
     }
@@ -76,6 +77,11 @@ namespace SocketHandler.Core
       using var command = new SQLiteCommand(connection);
       command.CommandText = @"
         CREATE TABLE IF NOT EXISTS TicTacToePlayers (
+          Alias TEXT PRIMARY KEY,
+          Wins  INTEGER NOT NULL DEFAULT 0
+        );
+        
+        CREATE TABLE IF NOT EXISTS RockPaperScissorsPlayers (
           Alias TEXT PRIMARY KEY,
           Wins  INTEGER NOT NULL DEFAULT 0
         );";
